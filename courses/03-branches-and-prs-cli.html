@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 3 · Branching + PRs from the CLI - learn github for builders with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-github-for-builders-with-phoebe</a> / Session 3 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn GitHub for Builders with Phoebe · Session 3 of 6 · Tech track</div>
+    <h1>Branching + PRs <span class="accent">from the CLI</span></h1>
+    <p class="sub">You can run the daily loop. Now do it the way real teams do: every change on its own short-lived branch, proposed as a pull request, reviewed, then merged - all without leaving the terminal. The PR is the same GitHub proposal object from the non-tech track; this session drives it with <code>git switch</code> and <code>gh</code>, and gives you the reviewer side done right.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Builders &amp; analysts</span>
+      <span class="chip audience">Terminal or Codespaces</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build-along</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why branch at all, when you could just push to main</h2>
+    </div>
+    <p class="lede">Because a branch is a safe sandbox and a pull request is a checkpoint. Session 1 told you branches are cheap pointers; this session spends them freely. You will create a branch, push it, open a PR from the terminal, and review a teammate's PR both as commenter and approver. The payoff is trunk-based development: main stays always-deployable while all the messy work happens on short-lived branches that only merge once reviewed and green.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along - type it in your terminal</span>
+      <span class="pill inkpill">Running artifact: your my-project repo, now branched + PR'd</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A feature branch created with <code>git switch -c</code> and pushed, your first pull request opened entirely from the terminal with <code>gh pr create --fill</code>, hands-on time on the reviewer side (<code>gh pr review</code>, comments, suggestions, approve), and a CODEOWNERS file that auto-requests the right reviewer for every path.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: BRANCH + SWITCH ============ -->
+  <section class="section" id="branch">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · branch and switch</span>
+      <h2>Branch and switch from the terminal <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">The modern command for this is <code>git switch</code> - clearer than the old overloaded <code>git checkout</code>. One flag creates a branch and moves you onto it in a single step. Remember from Session 1: a branch is just a movable pointer, so making one is instant and costs nothing.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A feature branch created off main, moving HEAD onto it, then pushed to origin">
+        <style>
+          .brT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .brS { font: 400 11px "SF Mono", Menlo, monospace; fill: #FFFFFF; opacity: .85; }
+          .brH { font: 700 15px Inter, sans-serif; fill: #1F2328; }
+          .brG { font: 700 12px Inter, sans-serif; fill: #1F883D; }
+          .brP { font: 700 12px Inter, sans-serif; fill: #8250DF; }
+          .brX { font: 400 12px Inter, sans-serif; fill: #656D76; }
+          .brL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+        </style>
+        <defs>
+          <marker id="brArrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#AFB8C1"/>
+          </marker>
+        </defs>
+        <text class="brH" x="40" y="34">switch -c makes the pointer and moves HEAD onto it - instantly.</text>
+        <line class="brL" x1="150" y1="110" x2="240" y2="110" marker-end="url(#brArrow)"/>
+        <rect x="60" y="86" width="90" height="48" rx="10" fill="#1B1F23"/>
+        <text class="brT" x="82" y="108">C1</text>
+        <text class="brS" x="76" y="124">a3f9</text>
+        <rect x="240" y="86" width="90" height="48" rx="10" fill="#24292F"/>
+        <text class="brT" x="262" y="108">C2</text>
+        <text class="brS" x="256" y="124">7b21</text>
+        <line class="brL" x1="330" y1="110" x2="420" y2="76" marker-end="url(#brArrow)"/>
+        <rect x="420" y="52" width="90" height="48" rx="10" fill="#8250DF"/>
+        <text class="brT" x="430" y="74">C3</text>
+        <text class="brS" x="436" y="90">c8de</text>
+        <rect x="540" y="52" width="200" height="34" rx="8" fill="#F3E8FF"/>
+        <text class="brP" x="556" y="74">feature/add-docs →</text>
+        <rect x="360" y="150" width="150" height="34" rx="8" fill="#DAFBE1"/>
+        <text class="brG" x="376" y="172">main →</text>
+        <line class="brL" x1="300" y1="134" x2="410" y2="152" stroke-dasharray="4 3"/>
+        <rect x="540" y="150" width="220" height="34" rx="8" fill="#24292F"/>
+        <text class="brT" x="556" y="172">push -u origin feature/add-docs</text>
+        <text class="brX" x="40" y="228">main stays put and deployable; your work rides the feature pointer until the PR merges.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a feature branch is a new pointer off main; HEAD rides it, push -u publishes it</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>switch -c, work, push -u - the branch loop<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>git switch -c feature/add-docs</code></strong> creates the branch and moves HEAD onto it in one step. Everything you commit now lands on the feature branch, leaving main untouched.</li>
+          <li><strong>Name branches so the intent is obvious.</strong> Conventions like <code>feature/</code>, <code>fix/</code>, <code>docs/</code> prefixes group work and read well in <code>git branch</code>. <code>feature/add-usage-docs</code> beats <code>my-changes</code>.</li>
+          <li><strong><code>git push -u origin feature/add-docs</code></strong> publishes the branch to GitHub and sets upstream, so later just <code>git push</code>. This is what makes a PR possible - GitHub needs the branch before it can open one.</li>
+          <li><strong>Keep the branch current.</strong> While you work, main moves on. Freshen up with <code>git pull origin main</code> (a merge) or rebase onto it - Session 4 goes deep on the difference. For now: pull main in often so the eventual merge is small.</li>
+        </ul>
+        <div class="termbox"><span class="cmt"># create the branch and hop onto it</span>
+<span class="cmd">git switch -c feature/add-usage-docs</span>
+<span class="out">Switched to a new branch 'feature/add-usage-docs'</span>
+<span class="cmt"># do the work, then snapshot it</span>
+<span class="cmd">git add . &amp;&amp; git commit -m "docs: add usage section to README"</span>
+<span class="cmt"># publish the branch and set upstream (once)</span>
+<span class="cmd">git push -u origin feature/add-usage-docs</span>
+<span class="out">branch 'feature/add-usage-docs' set up to track 'origin/feature/add-usage-docs'</span></div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>switch vs the old checkout<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You will still see <code>git checkout</code> everywhere online. It works, but it does two unrelated jobs - switching branches and restoring files - which caused years of confusion. Modern git split it: <code>git switch</code> changes branches, <code>git restore</code> (Session 2) restores files. Use the new pair; recognize the old one in other people's docs.</p>
+        <table class="clean">
+          <thead><tr><th>Goal</th><th>Modern</th><th>Old</th></tr></thead>
+          <tbody>
+            <tr><td>New branch + move to it</td><td><code>git switch -c name</code></td><td><code>git checkout -b name</code></td></tr>
+            <tr><td>Move to existing branch</td><td><code>git switch name</code></td><td><code>git checkout name</code></td></tr>
+            <tr><td>Discard file changes</td><td><code>git restore file</code></td><td><code>git checkout -- file</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: PRs WITH GH ============ -->
+  <section class="section" id="prs">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · PRs without the browser</span>
+      <h2>PRs without leaving the terminal (gh) <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">The pull request is still the GitHub proposal object you met in the non-tech track: "here is my branch, please review and merge it." What changes here is you never touch the browser. <code>gh</code> opens it, fills it, and tracks it from where you already are - the terminal.</p>
+
+    <div class="termbox"><span class="cmt"># open a PR, auto-filling title + body from your commits</span>
+<span class="cmd">gh pr create --fill</span>
+<span class="out">Creating pull request for feature/add-usage-docs into main</span>
+<span class="out">https://github.com/phoebefu6/my-project/pull/7</span>
+<span class="cmt"># jump to it in the browser when you want the full UI</span>
+<span class="cmd">gh pr view --web</span>
+<span class="cmt"># see where every PR you touch stands - yours and ones needing review</span>
+<span class="cmd">gh pr status</span></div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>create, view, status, draft, link<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>gh pr create --fill</code></strong> opens the PR and uses your branch's commits for the title and body - zero typing for a well-committed branch. Add <code>--title</code> / <code>--body</code> to override, or drop <code>--fill</code> for an interactive prompt.</li>
+          <li><strong><code>gh pr view --web</code></strong> pops the PR open in the browser when you want the diff view or the checks tab. <code>gh pr status</code> shows a dashboard: your open PRs, and ones assigned to you for review.</li>
+          <li><strong>Draft PRs for work in progress.</strong> <code>gh pr create --draft</code> opens it as a draft - CI runs, teammates can peek, but it is clearly "not ready to merge". Mark it ready with <code>gh pr ready</code>.</li>
+          <li><strong>Link issues from the body.</strong> Put <code>Closes #12</code> in the PR body and merging the PR auto-closes issue 12. It also cross-links them so the history explains itself.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>How a working data team ships: nobody pushes to main. Every change - a new dbt model, a fixed query, a docs tweak - is a short-lived branch that lives a day or two, gets a PR, gets one review, and merges. main is always green and always deployable. That is trunk-based development, and it is why the team can release on any afternoon without a "code freeze" or a scary big-bang merge.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Merge strategies: squash, merge commit, rebase<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>When a PR is approved, <code>gh pr merge</code> offers three shapes. The choice is a team convention, not a right answer - pick one and be consistent.</p>
+        <table class="clean">
+          <thead><tr><th>Flag</th><th>What lands on main</th><th>Good when</th></tr></thead>
+          <tbody>
+            <tr><td><code>--squash</code></td><td>all branch commits collapse into one clean commit</td><td>the branch had messy WIP commits; you want a tidy main history</td></tr>
+            <tr><td><code>--merge</code></td><td>every branch commit plus a merge commit with two parents</td><td>you want the full detailed history preserved</td></tr>
+            <tr><td><code>--rebase</code></td><td>branch commits replayed onto main, no merge commit</td><td>you want a linear history without merge commits</td></tr>
+          </tbody>
+        </table>
+        <p>Most modern teams default to squash for a clean, one-commit-per-PR main. Session 4 covers the rebase mechanics behind that third option.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: REVIEW DEEP HALF ============ -->
+  <section class="section" id="review">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the reviewer side</span>
+      <h2>Review deep half: the reviewer side done right <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">In the non-tech track you saw a PR get reviewed. Now you are the reviewer, from the terminal. Reviewing well is a craft: you approve, request changes, or comment; you can propose exact code with a suggestion the author accepts in one click; and CODEOWNERS makes sure the right person is asked automatically. Good review is where quality and mentorship both happen.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pull request review flow from open through CI, reviewer comment or suggestion, author address, to merge, with CODEOWNERS auto-assignment">
+        <style>
+          .rvT { font: 700 12.5px Inter, sans-serif; fill: #FFFFFF; }
+          .rvN { font: 700 12.5px Inter, sans-serif; fill: #1F2328; }
+          .rvH { font: 700 15px Inter, sans-serif; fill: #1F2328; }
+          .rvX { font: 400 11.5px Inter, sans-serif; fill: #656D76; }
+          .rvP { font: 700 11.5px Inter, sans-serif; fill: #8250DF; }
+          .rvL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+        </style>
+        <defs>
+          <marker id="rvArrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#AFB8C1"/>
+          </marker>
+        </defs>
+        <text class="rvH" x="40" y="32">Open the PR, CI runs, reviewer weighs in, author addresses, then merge.</text>
+        <rect x="40" y="66" width="120" height="46" rx="10" fill="#24292F"/>
+        <text class="rvT" x="76" y="94">open PR</text>
+        <rect x="210" y="66" width="120" height="46" rx="10" fill="#24292F"/>
+        <text class="rvT" x="248" y="94">CI runs</text>
+        <rect x="380" y="66" width="150" height="46" rx="10" fill="#24292F"/>
+        <text class="rvT" x="398" y="88">reviewer:</text>
+        <text class="rvT" x="398" y="104" style="font-size:10.5px">comment / suggest</text>
+        <rect x="580" y="66" width="150" height="46" rx="10" fill="#24292F"/>
+        <text class="rvT" x="598" y="88">author</text>
+        <text class="rvT" x="598" y="104" style="font-size:10.5px">addresses it</text>
+        <rect x="580" y="180" width="150" height="46" rx="10" fill="#2DA44E"/>
+        <text class="rvT" x="616" y="200">approve →</text>
+        <text class="rvT" x="616" y="216" style="font-size:10.5px">merge</text>
+        <line class="rvL" x1="160" y1="89" x2="204" y2="89" marker-end="url(#rvArrow)"/>
+        <line class="rvL" x1="330" y1="89" x2="374" y2="89" marker-end="url(#rvArrow)"/>
+        <line class="rvL" x1="530" y1="89" x2="574" y2="89" marker-end="url(#rvArrow)"/>
+        <path class="rvL" d="M655,112 L655,176" marker-end="url(#rvArrow)"/>
+        <path class="rvL" d="M580,150 C500,150 470,120 455,114" marker-end="url(#rvArrow)"/>
+        <text class="rvX" x="380" y="150">loop until green + happy</text>
+        <rect x="40" y="200" width="330" height="60" rx="10" fill="#F3E8FF" stroke="#8250DF"/>
+        <text class="rvP" x="60" y="226">CODEOWNERS: /pipelines/ @data-team</text>
+        <text class="rvX" x="60" y="248">auto-requests the right reviewer per path on open</text>
+        <line class="rvL" x1="205" y1="200" x2="130" y2="116" stroke-dasharray="4 3" marker-end="url(#rvArrow)"/>
+      </svg>
+      <figcaption>🔍 Click to zoom - the review loop, with CODEOWNERS auto-assigning the reviewer the moment the PR opens</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Approve, request changes, suggest, and CODEOWNERS<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Three verdicts.</strong> <code>gh pr review --approve</code> greenlights it, <code>--request-changes</code> blocks the merge until addressed, <code>--comment</code> leaves feedback without a verdict. Add <code>-b "..."</code> for the message.</li>
+          <li><strong>Line suggestions.</strong> On the PR diff a reviewer can propose exact replacement code in a suggestion block; the author accepts it with one click and it becomes a commit. It turns "you should rename this" into "here, I renamed it - click to take it".</li>
+          <li><strong>CODEOWNERS auto-assigns reviewers.</strong> A <code>.github/CODEOWNERS</code> file maps paths to owners, so a PR touching <code>/pipelines/</code> automatically requests the data team. No more "who should review this?" - GitHub knows.</li>
+          <li><strong>What good review comments look like.</strong> Specific, kind, actionable. "This loop re-reads the file each iteration - can we read once above?" beats "this is slow". Praise what is good; the PR is a conversation, not a gate.</li>
+        </ul>
+        <div class="termbox"><span class="cmt"># check out a teammate's PR to read it locally</span>
+<span class="cmd">gh pr checkout 7</span>
+<span class="cmt"># leave a single comment without a verdict</span>
+<span class="cmd">gh pr review 7 --comment -b "Nice - one nit on the loop, see thread"</span>
+<span class="cmt"># or approve it outright</span>
+<span class="cmd">gh pr review 7 --approve</span>
+<span class="out">✓ Approved pull request #7</span></div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Trunk-based vs git-flow-lite, and branch naming<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two common workflows, and when each fits:</p>
+        <table class="clean">
+          <thead><tr><th>Workflow</th><th>Shape</th><th>Fits</th></tr></thead>
+          <tbody>
+            <tr><td>Trunk-based</td><td>short-lived branches off main, merged in a day or two; main always deployable</td><td>most modern teams, continuous delivery, small frequent changes</td></tr>
+            <tr><td>Git-flow-lite</td><td>a longer-lived <code>develop</code> branch plus release branches</td><td>scheduled releases, versioned products shipping to customers</td></tr>
+          </tbody>
+        </table>
+        <p>Default to trunk-based with short branches unless you have a real reason not to - long-lived branches drift from main and turn merging into archaeology. Branch naming taxonomy that reads well: <code>feature/&lt;short-desc&gt;</code>, <code>fix/&lt;short-desc&gt;</code>, <code>docs/&lt;short-desc&gt;</code>, <code>chore/&lt;short-desc&gt;</code>. Keep it lowercase, hyphenated, and about the intent.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 1 of 3</span>
+      <h2>Your first branch + PR from the CLI <span class="tag demo">★ 7 min · everyone branches</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>In your my-project repo: <code>git switch -c feature/add-usage-docs</code>. Confirm you moved with <code>git status</code> - it names the new branch.</p></div>
+      <div class="step"><p>Edit the README (add a short "Usage" section), then <code>git add .</code> and <code>git commit -m "docs: add usage section to README"</code>.</p></div>
+      <div class="step"><p>Publish the branch: <code>git push -u origin HEAD</code>. (<code>HEAD</code> is a handy shorthand for "the branch I am on" so you do not retype the name.)</p></div>
+      <div class="step"><p>Open the PR from the terminal: <code>gh pr create --fill</code>. Then <code>gh pr view --web</code> to see your proposal live on GitHub - branch, diff, and all.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 2 of 3</span>
+      <h2>Build the history you are about to make <span class="tag demo">★ 8 min · everyone clicks</span></h2>
+    </div>
+    <p class="lede">Before you merge your real PR, rehearse the exact shape here. Reproduce Build-along 1 as a graph: a commit on main, a feature branch, two commits on it, back to main, then merge. What you build in the widget is the history your PR is about to create for real.</p>
+    <div class="widget" data-widget="gitplay" data-config='{"title": "★ Branch scenarios - build the history you are about to make for real", "intro": "Reproduce Build-along 1: commit on main, branch a feature, commit twice on it, switch to main, merge. This is your PR about to happen."}'></div>
+    <div class="steps">
+      <div class="step"><p>Reproduce the branch-commit-merge shape: commit on main, make a feature branch, commit twice on it, switch back to main, merge.</p></div>
+      <div class="step"><p>Note the merge commit with two parents - that is exactly what clicking Merge on your PR (with <code>--merge</code>) will create. Squash would collapse the two feature commits into one instead.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 3 of 3</span>
+      <h2>Pair review via gh <span class="tag demo">★ 6 min · review both sides</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Pair up. Partner A already has a PR open (from Build-along 1). Partner B: <code>gh pr checkout &lt;number&gt;</code> to pull A's branch down and read the diff locally.</p></div>
+      <div class="step"><p>Partner B leaves one comment: <code>gh pr review &lt;number&gt; --comment -b "one specific, kind, actionable note"</code>. Make it real - a genuine observation about the change.</p></div>
+      <div class="step"><p>Partner B approves: <code>gh pr review &lt;number&gt; --approve</code>. Partner A watches the approval land in <code>gh pr status</code>.</p></div>
+      <div class="step"><p>Partner A merges: <code>gh pr merge --squash</code>. Both run <code>git switch main &amp;&amp; git pull</code> to sync. You just did a full review cycle without opening the browser.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Solo? Review yourself</strong>
+      No partner? Open the PR, read your own diff with <code>gh pr diff</code>, and merge it. Reading your change as a reviewer catches surprisingly many of your own bugs - do it every time.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 25 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Make every change a branch + PR this week</strong> - even solo. The diff review at the top of a PR catches your own bugs before they hit main.</li>
+      <li><strong>Add a CODEOWNERS file</strong> at <code>.github/CODEOWNERS</code> mapping a path to yourself (e.g. <code>* @your-username</code>). Open a PR and watch yourself get auto-requested.</li>
+      <li><strong>Try a draft PR:</strong> <code>gh pr create --draft</code> for something half-finished, then <code>gh pr ready</code> when it is done. Feel the difference from a normal PR.</li>
+      <li><strong>Read the trunk-based self-study card</strong> and decide which workflow fits your team - then write down why.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">1 · What does git switch -c feature-x do?</p>
+      <button class="qopt" type="button">A · Creates a new branch called feature-x and moves HEAD onto it, in one step</button>
+      <button class="qopt" type="button">B · Copies the whole project folder into a new directory called feature-x</button>
+      <button class="qopt" type="button">C · Deletes the branch feature-x and returns you to main</button>
+      <p class="qwhy">The -c flag means create. switch -c makes the new pointer and moves you onto it at once - since a branch is just a pointer (Session 1), this is instant and copies nothing.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What does gh pr create make?</p>
+      <button class="qopt" type="button">A · A new branch on your machine</button>
+      <button class="qopt" type="button">B · A local commit that merges your branch into main</button>
+      <button class="qopt" type="button">C · A pull request on GitHub proposing your branch be reviewed and merged into the base</button>
+      <p class="qwhy">A PR is the GitHub proposal object: "here is my branch, please review and merge it." gh pr create opens it from the terminal; --fill borrows the title and body from your commits.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · What is the CODEOWNERS file for?</p>
+      <button class="qopt" type="button">A · It lists everyone allowed to clone the repository</button>
+      <button class="qopt" type="button">B · It maps file paths to owners so PRs touching those paths auto-request the right reviewers</button>
+      <button class="qopt" type="button">C · It records who wrote each line, replacing git blame</button>
+      <p class="qwhy">CODEOWNERS lives at .github/CODEOWNERS and maps paths to people or teams. When a PR changes a matching path, GitHub automatically requests that owner's review - so the right eyes see the right changes.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official GitHub Skills coverage</h2>
+    </div>
+    <p class="lede">This session drives the review-pull-requests Skills exercise from the CLI and covers its deep half - the reviewer side - alongside the branch and PR mechanics from Introduction to Git.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Review pull requests (skills/review-pull-requests) - deep half</span><span class="note">gh pr review, comments, suggestions, request-changes, approve - Part 3 + Build-along 3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to Git - branch / switch / push</span><span class="note">git switch -c, push -u, PR creation - Part 1-2 + Build-along 1</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">CODEOWNERS auto-review</span><span class="note">path-to-owner mapping - Part 3 + homework</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Merge strategies (squash / rebase / merge commit)</span><span class="note">self-study card; Session 4 covers the rebase mechanics</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">gh aliases and shortcuts</span><span class="note">mentioned; HEAD shorthand, gh pr status, gh pr ready</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 3 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Branch loop</b><span><code>git switch -c feature/x</code> → work → <code>commit</code> → <code>git push -u origin HEAD</code>.</span></div>
+      <div class="cheat-item"><b>Open a PR</b><span><code>gh pr create --fill</code> · <code>gh pr view --web</code> · <code>gh pr status</code> · <code>gh pr create --draft</code>.</span></div>
+      <div class="cheat-item"><b>Review a PR</b><span><code>gh pr checkout N</code> → read → <code>gh pr review N --comment / --request-changes / --approve</code>.</span></div>
+      <div class="cheat-item"><b>Merge it</b><span><code>gh pr merge --squash</code> (tidy) · <code>--merge</code> (full history) · <code>--rebase</code> (linear).</span></div>
+      <div class="cheat-item"><b>CODEOWNERS</b><span><code>.github/CODEOWNERS</code> maps paths to owners - auto-requests the right reviewer. Link issues with <code>Closes #12</code>.</span></div>
+      <div class="cheat-item"><b>Workflow</b><span>Trunk-based: short branches off main, main always deployable. Names: <code>feature/</code>, <code>fix/</code>, <code>docs/</code>.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 3 of 6 · learn-github-for-builders-with-phoebe · by Phoebe Fu</span>
+    <span><a href="02-the-daily-loop.html">← The daily loop</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="04-merge-conflicts.html">Next: Merge conflicts without fear →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+<script src="../assets/widgets.js?v=1"></script>
+</body>
+</html>

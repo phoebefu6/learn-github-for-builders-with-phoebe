@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 6 · Ship like a professional - learn github for builders with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-github-for-builders-with-phoebe</a> / Session 6 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn GitHub for Builders with Phoebe · Session 6 of 6 · Tech track</div>
+    <h1>Ship like a professional: <span class="accent">releases, protection, and a repo you are proud of</span></h1>
+    <p class="sub">Five sessions gave you the moves - snapshots, the daily loop, branches, conflicts, CI. This one turns habits into enforced rules. You cut a real release, lock main so broken code cannot land, auto-deploy on merge, and measure your my-project repo against the bar a senior engineer would set. This is graduation.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Stretch</span>
+      <span class="chip audience">Builders &amp; analysts</span>
+      <span class="chip audience">Terminal or Codespaces</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-16 · Concepts</span>
+      <span class="a3" style="flex:5">16-40 · Build-along</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>From good habits to enforced rules</h2>
+    </div>
+    <p class="lede">Anyone can be careful on a good day. Professional repos are safe on a bad day - because the rules, not the humans, refuse to let a failing or unreviewed change reach main. Today you turn everything from Sessions 3-5 into machinery: a version tag becomes a downloadable release, a green check becomes a merge gate, a merge to main becomes an automatic deploy. Then you score your repo the way a reviewer would and pin it on your profile.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along - type it in your terminal</span>
+      <span class="pill inkpill">Running artifact: my-project, shipped properly</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A tagged v1.0.0 release with auto-generated notes on GitHub, a protected main that requires a PR + a passing CI check + one approval, an Actions workflow that deploys Pages on merge, and a graduation scorecard that tells you exactly where your repo stands against a professional bar.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: TAGS + RELEASES + SEMVER ============ -->
+  <section class="section" id="releases">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · mark a version</span>
+      <h2>Tags, releases, and semver <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">A commit hash is precise but meaningless to humans. A tag pins a friendly, permanent name - a version - to one commit. A GitHub Release turns that tag into something people can download, with notes describing what changed. Semantic versioning gives the number itself a meaning so anyone can read risk at a glance.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Commit line with version tags v1.0.0, v1.1.0, v2.0.0 and semantic versioning decoded">
+        <style>
+          .rlT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .rlS { font: 400 11px "SF Mono", Menlo, monospace; fill: #FFFFFF; opacity: .85; }
+          .rlTag { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+          .rlH { font: 700 15px Inter, sans-serif; fill: #1F2328; }
+          .rlX { font: 400 12.5px Inter, sans-serif; fill: #656D76; }
+          .rlK { font: 700 13px Inter, sans-serif; fill: #1F2328; }
+          .rlL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+        </style>
+        <text class="rlH" x="40" y="32">A tag pins a version name to one commit. semver makes the number mean something.</text>
+        <line class="rlL" x1="130" y1="100" x2="210" y2="100"/>
+        <line class="rlL" x1="300" y1="100" x2="380" y2="100"/>
+        <line class="rlL" x1="470" y1="100" x2="550" y2="100"/>
+        <rect x="70" y="78" width="60" height="44" rx="10" fill="#1B1F23"/>
+        <text class="rlT" x="88" y="105">c1</text>
+        <rect x="210" y="78" width="90" height="44" rx="10" fill="#24292F"/>
+        <text class="rlS" x="228" y="105">first cut</text>
+        <rect x="380" y="78" width="90" height="44" rx="10" fill="#24292F"/>
+        <text class="rlS" x="398" y="105">new chart</text>
+        <rect x="550" y="78" width="90" height="44" rx="10" fill="#24292F"/>
+        <text class="rlS" x="568" y="105">breaking</text>
+        <rect x="205" y="34" width="80" height="28" rx="7" fill="#8250DF"/>
+        <text class="rlTag" x="216" y="53">v1.0.0</text>
+        <line class="rlL" x1="245" y1="62" x2="250" y2="78" stroke="#8250DF"/>
+        <rect x="375" y="34" width="80" height="28" rx="7" fill="#8250DF"/>
+        <text class="rlTag" x="386" y="53">v1.1.0</text>
+        <line class="rlL" x1="415" y1="62" x2="420" y2="78" stroke="#8250DF"/>
+        <rect x="545" y="34" width="80" height="28" rx="7" fill="#8250DF"/>
+        <text class="rlTag" x="556" y="53">v2.0.0</text>
+        <line class="rlL" x1="585" y1="62" x2="590" y2="78" stroke="#8250DF"/>
+        <rect x="70" y="176" width="740" height="118" rx="12" fill="#F6F8FA"/>
+        <text class="rlK" x="92" y="206">v 2 . 1 . 3</text>
+        <text class="rlX" x="200" y="206">the three numbers, left to right:</text>
+        <text class="rlK" x="92" y="238">MAJOR</text>
+        <text class="rlX" x="180" y="238">breaking change - existing users must adapt (2.x → 3.0.0)</text>
+        <text class="rlK" x="92" y="264">MINOR</text>
+        <text class="rlX" x="180" y="264">new feature, backward compatible - safe to upgrade (2.1 → 2.2.0)</text>
+        <text class="rlK" x="92" y="290">PATCH</text>
+        <text class="rlX" x="180" y="290">bug fix only, no new surface - always safe (2.1.3 → 2.1.4)</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - tags pin versions to commits; MAJOR.MINOR.PATCH tells you the risk before you read a line</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Annotated tags and gh release create<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>An annotated tag is the professional default.</strong> <code>git tag -a v1.0.0 -m "..."</code> stores a message, author, and date - a lightweight tag (<code>git tag v1.0.0</code>) stores only a name. Use annotated for anything you release.</li>
+          <li><strong>Tags do not push by themselves.</strong> <code>git push origin v1.0.0</code> (or <code>--tags</code>) sends them. Forgetting this is the number one "where is my release?" moment.</li>
+          <li><strong>A Release is a tag with a face.</strong> <code>gh release create v1.0.0 --generate-notes</code> turns the tag into a GitHub Release page with a changelog built automatically from the PRs merged since the last tag - plus downloadable source archives.</li>
+        </ul>
+        <div class="termbox"><span class="cmt"># pin an annotated version to the current commit on main</span>
+<span class="cmd">git tag -a v1.0.0 -m "First release"</span>
+<span class="cmt"># tags do not travel with a normal push - send it explicitly</span>
+<span class="cmd">git push origin v1.0.0</span>
+<span class="cmt"># turn the tag into a downloadable Release with auto notes from merged PRs</span>
+<span class="cmd">gh release create v1.0.0 --generate-notes</span>
+<span class="out">https://github.com/phoebefu6/my-project/releases/tag/v1.0.0</span></div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Which number moves? one line each<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>Change</th><th>Bump</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Breaking - existing use stops working</td><td>MAJOR</td><td>1.4.2 → 2.0.0</td></tr>
+            <tr><td>Feature - new, backward compatible</td><td>MINOR</td><td>1.4.2 → 1.5.0</td></tr>
+            <tr><td>Fix - bug patched, nothing new</td><td>PATCH</td><td>1.4.2 → 1.4.3</td></tr>
+          </tbody>
+        </table>
+        <p>When MAJOR or MINOR bumps, the numbers to its right reset to zero. Auto-generated release notes group the merged PRs so the changelog writes itself - one more reason short, clear PR titles from Session 3 pay off.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: BRANCH PROTECTION ============ -->
+  <section class="section" id="protection">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · make the rules real</span>
+      <h2>Branch protection + CI as a gate <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Until now the green check from Session 5 was a suggestion - you could merge past a red one if you were reckless. Branch protection turns it into a gate. In Settings → Branches you add a rule for main that requires a PR, requires that CI check to pass, requires one approval, and forbids direct pushes. The habits become law.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A pull request passing through three gates - review required, CI green, up to date - before reaching protected main">
+        <style>
+          .gtT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .gtK { font: 700 12.5px Inter, sans-serif; fill: #1F2328; }
+          .gtX { font: 400 12px Inter, sans-serif; fill: #656D76; }
+          .gtH { font: 700 15px Inter, sans-serif; fill: #1F2328; }
+          .gtL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+        </style>
+        <defs>
+          <marker id="gtArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#AFB8C1"/></marker>
+        </defs>
+        <text class="gtH" x="40" y="32">A PR only reaches protected main after all three gates pass.</text>
+        <rect x="40" y="108" width="110" height="52" rx="11" fill="#0969DA"/>
+        <text class="gtT" x="66" y="139">Your PR</text>
+        <line class="gtL" x1="150" y1="134" x2="200" y2="134" marker-end="url(#gtArrow)"/>
+        <rect x="205" y="98" width="130" height="72" rx="11" fill="#DAFBE1" stroke="#2DA44E" stroke-width="2"/>
+        <text class="gtK" x="225" y="128">Gate 1</text>
+        <text class="gtX" x="225" y="150">1 approval</text>
+        <line class="gtL" x1="335" y1="134" x2="380" y2="134" marker-end="url(#gtArrow)"/>
+        <rect x="385" y="98" width="130" height="72" rx="11" fill="#DAFBE1" stroke="#2DA44E" stroke-width="2"/>
+        <text class="gtK" x="405" y="128">Gate 2</text>
+        <text class="gtX" x="405" y="150">CI is green</text>
+        <line class="gtL" x1="515" y1="134" x2="560" y2="134" marker-end="url(#gtArrow)"/>
+        <rect x="565" y="98" width="130" height="72" rx="11" fill="#DAFBE1" stroke="#2DA44E" stroke-width="2"/>
+        <text class="gtK" x="585" y="128">Gate 3</text>
+        <text class="gtX" x="585" y="150">up to date</text>
+        <line class="gtL" x1="695" y1="134" x2="740" y2="134" marker-end="url(#gtArrow)"/>
+        <rect x="745" y="108" width="95" height="52" rx="11" fill="#2DA44E"/>
+        <text class="gtT" x="775" y="139">main</text>
+        <rect x="205" y="210" width="330" height="52" rx="11" fill="#F6F8FA" stroke="#B42318" stroke-width="2"/>
+        <text class="gtK" x="225" y="234" style="fill:#B42318">Direct push to main</text>
+        <text class="gtX" x="225" y="252" style="fill:#B42318">rejected - no PR, no gates cleared</text>
+        <line class="gtL" x1="360" y1="210" x2="720" y2="162" stroke="#B42318" stroke-dasharray="5 4"/>
+        <text class="gtX" x="565" y="240">a failing or unreviewed change simply cannot land</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - protection makes the green check a gate, not a polite suggestion</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The four rules that make main safe<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Require a pull request before merging.</strong> No pushing straight to main - every change arrives as a reviewable PR.</li>
+          <li><strong>Require status checks to pass.</strong> Select your Session 5 CI job - a red run blocks the merge button entirely.</li>
+          <li><strong>Require one approval.</strong> A second pair of eyes signs off before code lands. Pair with CODEOWNERS to auto-request the right reviewer.</li>
+          <li><strong>Require the branch to be up to date.</strong> The PR must include the latest main, so checks run against what will actually merge.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>This is how a professional repo protects production. A brand-new contributor on their first day literally cannot break main - they can open a PR, but the rules block the merge until CI is green and a maintainer approves. The safety comes from the configuration, not from everyone remembering to be careful. That is the whole point of protection.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: DEPLOY + PRO-REPO BAR ============ -->
+  <section class="section" id="deploy">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · close the loop</span>
+      <h2>Deploy Pages via Actions + the pro-repo bar <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">The non-tech track published a site by hand in Settings. Now you automate it: set the Pages source to GitHub Actions and add a deploy workflow, and every merge to main republishes the site on its own. That closes the loop - reviewed code becomes live product with no manual step. Around it sits the professional-repo bar: the handful of files and rules that make a reviewer trust your work.</p>
+
+    <div class="termbox"><span class="cmt"># .github/workflows/deploy.yml - publish Pages on every push to main</span>
+<span class="cmd">on:</span>
+<span class="cmd">  push: { branches: [main] }</span>
+<span class="cmd">permissions:</span>
+<span class="cmd">  pages: write</span>
+<span class="cmd">  id-token: write</span>
+<span class="cmd">jobs:</span>
+<span class="cmd">  deploy:</span>
+<span class="cmd">    runs-on: ubuntu-latest</span>
+<span class="cmd">    environment: github-pages</span>
+<span class="cmd">    steps:</span>
+<span class="cmd">      - uses: actions/checkout@v4</span>
+<span class="cmd">      - uses: actions/upload-pages-artifact@v3</span>
+<span class="cmd">        with: { path: "." }</span>
+<span class="cmd">      - uses: actions/deploy-pages@v4</span>
+<span class="out">merge to main → build → live site, no button to press</span></div>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Community-health files that make a repo welcoming<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>CONTRIBUTING.md</strong> - how to set up, branch, and open a PR here. It answers the first question every new contributor has, once.</li>
+          <li><strong>Issue and PR templates</strong> - <code>.github/ISSUE_TEMPLATE/</code> and <code>PULL_REQUEST_TEMPLATE.md</code> prompt for the details you always end up asking for anyway.</li>
+          <li><strong>Dependabot</strong> - a <code>.github/dependabot.yml</code> file opens automatic PRs to bump vulnerable dependencies, so security upkeep runs itself.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>The professional-repo checklist, as a concept</strong>
+          README, a license, CI on every PR, protected main, tagged releases, CONTRIBUTING, and issue templates. You do not need all of them on day one - but a reviewer scans for them in seconds, and each present row raises how much they trust the repo.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 1 of 3</span>
+      <h2>Cut a release <span class="tag demo">★ 8 min · everyone tags</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>On your my-project repo, make sure you are on an up-to-date main: <code>git switch main &amp;&amp; git pull</code>.</p></div>
+      <div class="step"><p>Tag this commit as your first version: <code>git tag -a v1.0.0 -m "First release"</code>, then push the tag: <code>git push origin v1.0.0</code>.</p></div>
+      <div class="step"><p>Turn the tag into a Release with auto notes: <code>gh release create v1.0.0 --generate-notes</code>. Open the URL it prints and read the changelog built from your merged PRs.</p></div>
+      <div class="step"><p>Discuss out loud: if your next change removed a feature people rely on, what version would it be? (Answer: v2.0.0 - a MAJOR bump.)</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 2 of 3</span>
+      <h2>Protect main <span class="tag demo">★ 7 min · everyone locks</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>On GitHub, go to <strong>Settings → Branches → Add branch ruleset</strong> (or classic <em>Add rule</em>) and target <code>main</code>.</p></div>
+      <div class="step"><p>Turn on: <em>Require a pull request before merging</em>, <em>Require status checks to pass</em> (select your Session 5 CI job), and <em>Require 1 approval</em>. Save.</p></div>
+      <div class="step"><p>Now try to break the rule: <code>git switch main</code>, make a tiny edit, commit, and <code>git push</code>. Watch GitHub reject it - the push is refused because main now requires a PR.</p></div>
+      <div class="step"><p>Sit with that for a second. Feel the safety: from now on, nothing reaches main without a review and a green check. That is a protected branch.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>If the push succeeded</strong>
+      The ruleset either did not save or targets the wrong branch name. Re-open Settings → Branches and confirm the pattern is exactly <code>main</code> and the rule is enabled.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 3 of 3</span>
+      <h2>The graduation scorecard <span class="tag demo">★ 6 min · everyone scores</span></h2>
+    </div>
+    <p class="lede">Six sessions in one widget. Tick every row your my-project repo genuinely has and read the verdict - it is the exact list a reviewer runs down before they trust a repo.</p>
+    <div class="widget" data-widget="checklist" data-config='{
+  "title": "★ Professional-repo scorecard - would a senior engineer respect this repo?",
+  "intro": "Tick what your my-project repo has after six sessions.",
+  "items": [
+    {"t": "README that explains what, why, and how to run it", "pts": 1},
+    {"t": "A license file", "pts": 1},
+    {"t": "CI that runs lint + tests on every PR", "pts": 2, "why": "the single biggest signal of a maintained, trustworthy repo"},
+    {"t": "main is protected: PR + green CI + review required", "pts": 3, "why": "this is what makes a repo safe for a team - unreviewed broken code cannot land"},
+    {"t": "Tagged releases with notes", "pts": 1},
+    {"t": "Clean commit history and short-lived branches", "pts": 2, "why": "readable history is a gift to every future maintainer, including you"}
+  ],
+  "verdicts": [
+    {"min": 80, "label": "Graduation earned - this is professional", "tone": "good", "note": "You run a repo the way senior engineers do. Put it on your profile and pin it."},
+    {"min": 50, "label": "Solid - a couple of gaps to close", "tone": "mid", "note": "The unticked rows are your finishing checklist. Protected main is the highest-value one."},
+    {"min": 0, "label": "Keep going", "tone": "bad", "note": "Walk the six sessions once on a real repo - each row maps to one of them."}
+  ]}'></div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>Your graduation lap <span class="tag exercise">◐ one real project</span></h2>
+    </div>
+    <ul>
+      <li><strong>Walk the full stack on one real project.</strong> Take something you actually own and give it the works: README + license → CI on every PR → protected main → a tagged release. Every row on the scorecard, for real.</li>
+      <li><strong>Write a CONTRIBUTING.md</strong> so the next person (or future you) knows how to set up, branch, and open a PR.</li>
+      <li><strong>Pin the repo on your profile.</strong> It is now proof you run a repo the professional way - link it from your LinkedIn.</li>
+      <li><strong>Where this goes next:</strong> the non-tech track teased this one; a future AI-literacy course covers Copilot + AI pair-programming; a security course covers CodeQL, secret scanning, and supply-chain safety. Star this course's repo so you catch them.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you graduate 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Your change removes a feature other people depend on. Which part of the semver number bumps?</p>
+      <button class="qopt" type="button">A · PATCH - it is a small edit</button>
+      <button class="qopt" type="button">B · MAJOR - a breaking change forces the leftmost number up</button>
+      <button class="qopt" type="button">C · MINOR - anything that changes behavior is a feature</button>
+      <p class="qwhy">MAJOR means "existing users must adapt". Removing something they rely on breaks them, so 1.x becomes 2.0.0. MINOR is for backward-compatible features; PATCH is bug-fix-only.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · With branch protection requiring a PR, an approval, and a passing check, what can no longer happen?</p>
+      <button class="qopt" type="button">A · Nobody can ever merge to main again</button>
+      <button class="qopt" type="button">B · Releases stop being taggable</button>
+      <button class="qopt" type="button">C · An unreviewed or failing change reaching main</button>
+      <p class="qwhy">Protection blocks direct pushes and holds the merge button until the checks pass and a reviewer approves. Merging still happens - only unsafe merges are stopped.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What does cutting a Release add over a plain git tag?</p>
+      <button class="qopt" type="button">A · Notes and a downloadable version on GitHub - a page people can read and grab</button>
+      <button class="qopt" type="button">B · It moves the tag to a newer commit automatically</button>
+      <button class="qopt" type="button">C · It deletes older tags to keep history clean</button>
+      <p class="qwhy">A tag is just a name on a commit. gh release create --generate-notes turns it into a GitHub Release page with an auto-built changelog and downloadable source archives.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Coverage - the whole track, and what is deliberately next</h2>
+    </div>
+    <p class="lede">Session 6 closes the tech track. Here is what today covered, what is self-study, and what is left for future courses on purpose.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to Git - tags</span><span class="note">annotated tags pin versions to commits - Part 1 + Build-along 1</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">GitHub Pages - deploy via Actions</span><span class="note">Pages source = Actions; merge to main auto-publishes - Part 3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Branch protection + required checks</span><span class="note">PR + green CI + approval as an enforced gate - Part 2 + Build-along 2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Releases + semver</span><span class="note">gh release create --generate-notes; MAJOR.MINOR.PATCH - Part 1</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">CONTRIBUTING / templates / Dependabot</span><span class="note">the community-health files - self-study card</span></div>
+      <div class="covered-row"><span class="status pill light">✗</span><span class="name">Copilot / CodeQL / supply-chain</span><span class="note">not covered by design - future AI + security courses</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 6 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Tag a version</b><span><code>git tag -a v1.0.0 -m "..."</code> then <code>git push origin v1.0.0</code>. Tags do not auto-push.</span></div>
+      <div class="cheat-item"><b>Cut a release</b><span><code>gh release create v1.0.0 --generate-notes</code> - notes + downloads from your merged PRs.</span></div>
+      <div class="cheat-item"><b>semver</b><span>MAJOR = breaking · MINOR = new feature (compatible) · PATCH = bug fix. Read risk from the number.</span></div>
+      <div class="cheat-item"><b>Protect main</b><span>Settings → Branches: require PR + status checks (your CI) + 1 approval. Green becomes a gate.</span></div>
+      <div class="cheat-item"><b>Auto-deploy</b><span>Pages source = GitHub Actions + a deploy workflow → merge to main republishes on its own.</span></div>
+      <div class="cheat-item"><b>The pro bar</b><span>README · license · CI · protected main · releases · CONTRIBUTING · templates. Reviewers scan for these.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 6 of 6 · learn-github-for-builders-with-phoebe · by Phoebe Fu</span>
+    <span><a href="05-actions-authoring.html">← Prev: Actions authoring</a> &nbsp;·&nbsp; <a href="../index.html">Back to all sessions →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+<script src="../assets/widgets.js?v=1"></script>
+</body>
+</html>

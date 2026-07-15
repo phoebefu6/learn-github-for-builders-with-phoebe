@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 1 · Git under the hood - learn github for builders with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-github-for-builders-with-phoebe</a> / Session 1 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn GitHub for Builders with Phoebe · Session 1 of 6 · Tech track</div>
+    <h1>Git under the hood: <span class="accent">snapshots, not saves</span></h1>
+    <p class="sub">The non-tech track lived in the browser. This one lives in the terminal - where the real workflow happens. We start with the one mental model that makes every git command afterward obvious: git stores snapshots and moves pointers. Get that, and you stop memorizing commands and start reasoning about them.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Foundation</span>
+      <span class="chip audience">Builders &amp; analysts</span>
+      <span class="chip audience">Terminal or Codespaces</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build-along</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why the terminal, and why start with the model</h2>
+    </div>
+    <p class="lede">Most git tutorials hand you ten commands to memorize and you forget nine by Friday. This one is different: we teach the data model first - three zones, snapshots, and movable pointers - and let the commands fall out of it. By the end of six sessions you will run a real project the way engineers do: branch, PR, resolve conflicts, ship with CI. Every session works on one repo you own, driven entirely from the command line (or a Codespace if you cannot install locally).</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along - type it in your terminal</span>
+      <span class="pill inkpill">Running artifact: one CLI-driven project repo</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The three-zone mental model (working tree, staging area, repository), git installed and configured (or a Codespace open), and your first repo with real commits you made by hand - plus the intuition that a commit is a snapshot and a branch is just a sticky note on one of them.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: SNAPSHOTS ============ -->
+  <section class="section" id="snapshots">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the core model</span>
+      <h2>Snapshots and pointers, not diffs <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">The single misconception that makes git confusing: people think it stores changes. It does not. Every commit is a full snapshot of your project, and git is ruthlessly efficient about not duplicating unchanged files. A branch is not a copy - it is a movable pointer to one snapshot. HEAD is the pointer that says "you are here".</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Commit chain of snapshots with main and feature branch pointers and HEAD">
+        <style>
+          .snT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .snS { font: 400 11px "SF Mono", Menlo, monospace; fill: #FFFFFF; opacity: .85; }
+          .snH { font: 700 15px Inter, sans-serif; fill: #1F2328; }
+          .snX { font: 400 12.5px Inter, sans-serif; fill: #656D76; }
+          .snP { font: 700 12px Inter, sans-serif; fill: #8250DF; }
+          .snB { font: 700 12px Inter, sans-serif; fill: #1F883D; }
+          .snL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+        </style>
+        <text class="snH" x="40" y="34">Each box is a full snapshot. Arrows point to the parent.</text>
+        <line class="snL" x1="150" y1="120" x2="240" y2="120"/>
+        <line class="snL" x1="330" y1="120" x2="420" y2="120"/>
+        <line class="snL" x1="510" y1="120" x2="600" y2="120"/>
+        <rect x="60" y="96" width="90" height="48" rx="10" fill="#1B1F23"/>
+        <text class="snT" x="82" y="118">C1</text>
+        <text class="snS" x="76" y="134">a3f9</text>
+        <rect x="240" y="96" width="90" height="48" rx="10" fill="#1B1F23"/>
+        <text class="snT" x="262" y="118">C2</text>
+        <text class="snS" x="256" y="134">7b21</text>
+        <rect x="420" y="96" width="90" height="48" rx="10" fill="#24292F"/>
+        <text class="snT" x="442" y="118">C3</text>
+        <text class="snS" x="436" y="134">c8de</text>
+        <rect x="600" y="52" width="90" height="48" rx="10" fill="#2DA44E"/>
+        <text class="snT" x="622" y="74">C4</text>
+        <text class="snS" x="616" y="90">f04a</text>
+        <line class="snL" x1="510" y1="112" x2="600" y2="76"/>
+        <rect x="600" y="152" width="90" height="48" rx="10" fill="#8250DF"/>
+        <text class="snT" x="614" y="174">C4'</text>
+        <text class="snS" x="616" y="190">9ic2</text>
+        <line class="snL" x1="510" y1="128" x2="600" y2="176"/>
+        <rect x="720" y="52" width="120" height="34" rx="8" fill="#DAFBE1"/>
+        <text class="snB" x="736" y="74">main →</text>
+        <rect x="720" y="159" width="120" height="34" rx="8" fill="#F3E8FF"/>
+        <text class="snP" x="736" y="181">feature →</text>
+        <rect x="360" y="225" width="150" height="34" rx="8" fill="#24292F"/>
+        <text class="snT" x="376" y="247" style="fill:#fff">HEAD → main</text>
+        <line class="snL" x1="435" y1="225" x2="640" y2="102" stroke-dasharray="4 3"/>
+        <text class="snX" x="40" y="285">Branches are cheap because they are just pointers. Making one is instant - it copies nothing.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - commits are snapshots, branches are movable pointers, HEAD is where you stand</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Commit = snapshot, branch = pointer, HEAD = you<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Commit</strong> - a complete snapshot of every tracked file at one moment, with a unique hash (a3f9...), an author, a time, a message, and a link to its parent. The chain of parents IS your history.</li>
+          <li><strong>Branch</strong> - a named pointer to one commit. <code>main</code> and <code>feature</code> above are just labels on snapshots. Creating a branch writes one 40-character file. That is why engineers branch constantly.</li>
+          <li><strong>HEAD</strong> - the pointer to the branch (or commit) you are currently on. "Checking out" a branch moves HEAD. Almost every "wait, where am I?" moment is a HEAD question.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Linus Torvalds wrote git in 2005 in about ten days to manage the Linux kernel after the project lost access to its proprietary tool. The snapshot-and-pointer design is exactly why it scales to a project with 1,000+ contributors and a million commits: reading history is following a chain, and branching is free.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The three zones: working tree, staging, repository<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Every file lives in one of three zones, and every basic command just moves files between them. This is the model that makes <code>add</code> and <code>commit</code> stop feeling arbitrary.</p>
+        <table class="clean">
+          <thead><tr><th>Zone</th><th>What it is</th><th>Command to enter it</th></tr></thead>
+          <tbody>
+            <tr><td>Working tree</td><td>your actual files on disk, edited freely</td><td>(you just edit)</td></tr>
+            <tr><td>Staging area (index)</td><td>the guest list for the next commit</td><td><code>git add</code></td></tr>
+            <tr><td>Repository</td><td>permanent snapshots, the history</td><td><code>git commit</code></td></tr>
+          </tbody>
+        </table>
+        <p>Staging feels like a pointless extra step for one week, then you realize it lets you commit part of your work with a clean message while leaving the rest in progress. It is a feature, not a toll.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: SETUP ============ -->
+  <section class="section" id="setup">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · get a working git</span>
+      <h2>Install, configure, or open a Codespace <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Two paths to a terminal with git. Local install is the long-term home; a Codespace is a full browser-based dev environment (git pre-installed) that gets anyone unblocked in 60 seconds - use it if install is fighting you.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The one-time setup every builder does once<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Check whether git is already there (macOS and most Linux ship it):</p>
+        <div class="termbox"><span class="cmd">git --version</span>
+<span class="out">git version 2.44.0</span></div>
+        <p>If missing: macOS <code>brew install git</code>, Windows install Git for Windows (gives you Git Bash), Linux <code>sudo apt install git</code>. Then set your identity once - it stamps every commit you will ever make:</p>
+        <div class="termbox"><span class="cmd">git config --global user.name "Phoebe Fu"</span>
+<span class="cmd">git config --global user.email "you@example.com"</span>
+<span class="cmd">git config --global init.defaultBranch main</span></div>
+        <div class="callout tip">
+          <strong>The zero-install escape hatch</strong>
+          On any GitHub repo press <code>.</code> (period) or click Code → Codespaces → Create. You get VS Code in the browser with git and <code>gh</code> already configured and authenticated. Nothing to install. This is also how you follow along on a locked-down work laptop.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The gh CLI: GitHub in your terminal<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>git talks to repositories; <code>gh</code> (GitHub CLI) talks to GitHub - PRs, issues, releases - without leaving the terminal. You will lean on it from Session 3. Install and log in once:</p>
+        <div class="termbox"><span class="cmd">gh auth login</span>
+<span class="out">? Where do you use GitHub? GitHub.com</span>
+<span class="out">? Authenticate Git with your GitHub credentials? Yes</span>
+<span class="out">✓ Logged in as phoebefu6</span></div>
+        <p>Codespaces come with <code>gh</code> pre-authenticated, so you can skip this there.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: FIRST COMMITS ============ -->
+  <section class="section" id="first-commits">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · make history by hand</span>
+      <h2>init, status, add, commit, log <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Five commands take a folder from "just files" to "a repository with history". Watch which zone each one touches - that is the whole point of doing it slowly once.</p>
+
+    <div class="termbox"><span class="cmt"># turn a folder into a repo (creates the hidden .git)</span>
+<span class="cmd">git init</span>
+<span class="cmt"># see what git thinks - everything is untracked right now</span>
+<span class="cmd">git status</span>
+<span class="cmt"># stage README.md: move it to the guest list for the next snapshot</span>
+<span class="cmd">git add README.md</span>
+<span class="cmt"># commit: freeze the snapshot with a message in the imperative mood</span>
+<span class="cmd">git commit -m "Add project README"</span>
+<span class="cmt"># the history - your snapshot chain, newest first</span>
+<span class="cmd">git log --oneline</span>
+<span class="out">a3f901c (HEAD -> main) Add project README</span></div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Reading status and log like a local<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>git status</code> is your compass.</strong> Run it constantly. It tells you your branch, what is staged (green), what is modified but unstaged (red), and what is untracked. When lost, status first.</li>
+          <li><strong><code>git add</code> is staging, not saving.</strong> It copies the current state of a file to the staging area. Edit after adding, and you must add again - the stage holds a snapshot, not a live link.</li>
+          <li><strong><code>git commit -m</code> writes the snapshot.</strong> Message style: imperative mood, under ~50 chars for the summary ("Add expense parser", not "added stuff"). Future-you greps these.</li>
+          <li><strong><code>git diff</code> vs <code>git diff --staged</code>.</strong> The first shows unstaged changes (working vs stage); the second shows staged changes (stage vs last commit). Two questions, two commands.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Good commit history is a debugging superpower. When production breaks, <code>git log</code> and <code>git bisect</code> let a team binary-search 500 commits to find the exact snapshot that introduced a bug in minutes. That is only possible because each commit is a coherent, message-labeled snapshot - which starts with the habits you build today.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Connecting to GitHub: remote, push<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Your commits are local until you push them to a remote (GitHub). The fastest path uses <code>gh</code> to create the repo and wire it up in one step:</p>
+        <div class="termbox"><span class="cmd">gh repo create my-project --public --source . --push</span>
+<span class="out">✓ Created repository phoebefu6/my-project</span>
+<span class="out">✓ Pushed commits to origin/main</span></div>
+        <p>Under the hood that sets <code>origin</code> (the remote's nickname) and runs <code>git push -u origin main</code>. Session 2 makes push/pull a daily reflex.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 1 of 3</span>
+      <h2>Get a working git <span class="tag demo">★ 6 min · everyone sets up</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Open a terminal (or press <code>.</code> on any GitHub repo for a Codespace). Run <code>git --version</code> - confirm you have one, or install per Part 2.</p></div>
+      <div class="step"><p>Set your identity: the three <code>git config --global</code> lines from Part 2. Verify with <code>git config --global --list</code>.</p></div>
+      <div class="step"><p>If you will use <code>gh</code> locally, run <code>gh auth login</code> now (skip in a Codespace - already done).</p></div>
+      <div class="step"><p>Make a home for today: <code>mkdir my-project &amp;&amp; cd my-project</code>. This folder becomes your running artifact for all six sessions.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 2 of 3</span>
+      <h2>Make your first three commits <span class="tag demo">★ 9 min · everyone types</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p><code>git init</code>, then create a README: <code>echo "# My Project" &gt; README.md</code>. Run <code>git status</code> and read it aloud - README is untracked (red).</p></div>
+      <div class="step"><p><code>git add README.md</code>, <code>git status</code> again - now it is staged (green). Notice the file moved zones without changing on disk.</p></div>
+      <div class="step"><p><code>git commit -m "Add project README"</code>. Then add two more small files (a <code>.gitignore</code>, a <code>notes.md</code>) and commit each with its own clear message. Three snapshots.</p></div>
+      <div class="step"><p><code>git log --oneline</code>. You just built a history chain by hand. Read the hashes - each is a snapshot you can return to.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Push it (optional, 1 min)</strong>
+      <code>gh repo create my-project --public --source . --push</code> and your local history is on GitHub. We make this routine in Session 2.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 3 of 3</span>
+      <h2>Feel the model in the graph <span class="tag demo">★ 7 min · everyone clicks</span></h2>
+    </div>
+    <p class="lede">Before you branch for real in Session 3, build the intuition here. Each button is the command it names - watch commits become snapshots and branches become pointers.</p>
+    <div class="widget" data-widget="gitplay" data-config='{
+      "title": "★ Git graph playground - the model behind the commands",
+      "intro": "Click commit a few times, make a branch, commit on it, switch to main, then merge. Watch HEAD move and the merge commit gain two parents."
+    }'></div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>This is not a toy rendering - it is the same graph <code>git log --graph --oneline --all</code> draws in your terminal, and the same one GitHub's network view shows. Learn to read it here and you can read any project's history at a glance.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 25 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Commit daily for five days</strong> in your my-project repo, even trivially. Goal: make <code>status → add → commit</code> muscle memory before Session 2 turns it into a loop with push.</li>
+      <li><strong>Practice reading:</strong> run <code>git log --graph --oneline --all</code> and confirm it matches the mental model from the playground.</li>
+      <li><strong>Read the self-study cards:</strong> the three zones, the gh CLI, remotes and push.</li>
+      <li><strong>Optional deep end:</strong> the official <em>Introduction to Git</em> Skills exercise (github.com/skills/introduction-to-git) - hands-on CLI in a real repo, reinforces today.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · What does a commit actually store?</p>
+      <button class="qopt" type="button">A · Only the lines that changed since the last commit</button>
+      <button class="qopt" type="button">B · A link to the previous commit and nothing else</button>
+      <button class="qopt" type="button">C · A full snapshot of every tracked file at that moment (deduplicated under the hood)</button>
+      <p class="qwhy">Git is a snapshot store, not a diff store. It shows you diffs when asked, but each commit is a complete picture - which is why branching and history reading are so fast.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">2 · You edited a file, ran git add, then edited it again. What is in the next commit if you commit now?</p>
+      <button class="qopt" type="button">A · Both edits - add tracks the file live</button>
+      <button class="qopt" type="button">B · Only the first edit - add staged a snapshot; the second edit is unstaged</button>
+      <button class="qopt" type="button">C · Nothing - you must add every time before it works at all</button>
+      <p class="qwhy">Staging captures the file's state at add-time. The second edit sits in the working tree until you add again. This is the three-zone model doing exactly what it says.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What is a branch, mechanically?</p>
+      <button class="qopt" type="button">A · A movable pointer to one commit - creating it copies nothing</button>
+      <button class="qopt" type="button">B · A full copy of the project folder</button>
+      <button class="qopt" type="button">C · A snapshot of all your uncommitted changes</button>
+      <p class="qwhy">A branch is a 40-character file naming one commit. That is why engineers make them freely - Session 3 does exactly that.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official GitHub Skills coverage</h2>
+    </div>
+    <p class="lede">This track maps to GitHub's own free CLI-based Skills exercises. Each session states what is covered here and what the official exercise adds.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to Git (skills/introduction-to-git)</span><span class="note">init, add, commit, log, the model - Parts 1-3 + Build-alongs; remotes deepen in Session 2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">The three-zone model + snapshots</span><span class="note">working tree / staging / repository - Part 1 + self-study</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Code with Codespaces (skills/code-with-codespaces)</span><span class="note">the zero-install path - Part 2; full Codespaces workflow is its own exercise</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">gh CLI + push to remote</span><span class="note">self-study cards - becomes daily in Session 2</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 1 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The model</b><span>Commit = full snapshot. Branch = movable pointer. HEAD = where you stand. History = chain of parents.</span></div>
+      <div class="cheat-item"><b>Three zones</b><span>Working tree (edit) → <code>git add</code> → staging → <code>git commit</code> → repository.</span></div>
+      <div class="cheat-item"><b>Setup once</b><span><code>git config --global user.name / user.email / init.defaultBranch main</code>.</span></div>
+      <div class="cheat-item"><b>First history</b><span><code>git init</code> · <code>status</code> · <code>add</code> · <code>commit -m</code> · <code>log --oneline</code>.</span></div>
+      <div class="cheat-item"><b>When lost</b><span><code>git status</code> first, always. It names your branch and every file's zone.</span></div>
+      <div class="cheat-item"><b>Zero install</b><span>Press <code>.</code> on any repo for a Codespace: git + gh pre-configured in the browser.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 1 of 6 · learn-github-for-builders-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="02-the-daily-loop.html">Next: The daily loop →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+<script src="../assets/widgets.js?v=1"></script>
+</body>
+</html>

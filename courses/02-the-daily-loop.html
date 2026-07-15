@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 2 · The daily loop - learn github for builders with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-github-for-builders-with-phoebe</a> / Session 2 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn GitHub for Builders with Phoebe · Session 2 of 6 · Tech track</div>
+    <h1>The daily loop: <span class="accent">status, add, commit, push, pull</span></h1>
+    <p class="sub">Session 1 gave you the model. This one gives you the rhythm - the five-command loop engineers run dozens of times a day without thinking. We wire your local repo to GitHub, keep secrets out of history with .gitignore, and build the one thing that separates confident builders from nervous ones: an undo toolbox you actually trust.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Foundation</span>
+      <span class="chip audience">Builders &amp; analysts</span>
+      <span class="chip audience">Terminal or Codespaces</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build-along</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>From one snapshot to a daily habit</h2>
+    </div>
+    <p class="lede">Last session you made history by hand: init, add, commit, log. Today that becomes a loop you run all day, connected to a copy of your repo living on GitHub. The loop is only five commands, but the confidence comes from two things wrapped around it - keeping the wrong files out (.gitignore) and knowing exactly how to undo when something goes sideways. By the end you will push to GitHub, ignore a secret, and pick the safe undo tool for any "oh no" without guessing.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along - type it in your terminal</span>
+      <span class="pill inkpill">Running artifact: your my-project repo, now on GitHub</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The full loop as muscle memory (status → add → commit → push, pull before you push), your my-project repo connected to a GitHub origin, a .gitignore keeping a fake secret out of history, and a mental decision strip that maps every "undo this" to the one safe tool: restore, revert, or reset.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE LOOP ============ -->
+  <section class="section" id="loop">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the rhythm</span>
+      <h2>The loop: status, add, commit, push, pull <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Engineers do not think about these commands individually any more than you think about individual keystrokes when typing. They run one loop: check what changed, stage it, snapshot it, send it up, and pull teammates' work down. The new idea versus Session 1 is the remote - a copy of your repo that lives on GitHub, nicknamed <code>origin</code>. Push sends your commits up; pull brings other people's commits down.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The daily git loop as a cycle: edit, status, add, commit, push, with pull feeding in from the remote">
+        <style>
+          .lpT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .lpN { font: 700 13px Inter, sans-serif; fill: #1F2328; }
+          .lpX { font: 400 12px Inter, sans-serif; fill: #656D76; }
+          .lpH { font: 700 15px Inter, sans-serif; fill: #1F2328; }
+          .lpG { font: 700 12px Inter, sans-serif; fill: #1F883D; }
+          .lpL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+          .lpD { stroke: #2DA44E; stroke-width: 2.5; fill: none; stroke-dasharray: 5 4; }
+        </style>
+        <defs>
+          <marker id="lpArrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#AFB8C1"/>
+          </marker>
+          <marker id="lpArrowG" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#2DA44E"/>
+          </marker>
+        </defs>
+        <text class="lpH" x="40" y="32">One loop, run all day. Pull feeds in from GitHub before you push.</text>
+        <rect x="60" y="70" width="120" height="46" rx="10" fill="#1B1F23"/>
+        <text class="lpT" x="98" y="98">edit</text>
+        <rect x="240" y="70" width="120" height="46" rx="10" fill="#24292F"/>
+        <text class="lpT" x="270" y="98">status</text>
+        <rect x="420" y="70" width="120" height="46" rx="10" fill="#24292F"/>
+        <text class="lpT" x="458" y="98">add</text>
+        <rect x="600" y="70" width="120" height="46" rx="10" fill="#24292F"/>
+        <text class="lpT" x="628" y="98">commit</text>
+        <line class="lpL" x1="180" y1="93" x2="234" y2="93" marker-end="url(#lpArrow)"/>
+        <line class="lpL" x1="360" y1="93" x2="414" y2="93" marker-end="url(#lpArrow)"/>
+        <line class="lpL" x1="540" y1="93" x2="594" y2="93" marker-end="url(#lpArrow)"/>
+        <rect x="600" y="180" width="120" height="46" rx="10" fill="#2DA44E"/>
+        <text class="lpT" x="638" y="208">push</text>
+        <line class="lpL" x1="660" y1="116" x2="660" y2="176" marker-end="url(#lpArrow)"/>
+        <path class="lpL" d="M600,203 C360,203 260,160 120,120" marker-end="url(#lpArrow)"/>
+        <text class="lpX" x="300" y="176">back to editing - the loop repeats</text>
+        <rect x="600" y="266" width="220" height="46" rx="10" fill="#DAFBE1"/>
+        <text class="lpG" x="620" y="294">origin (your repo on GitHub)</text>
+        <line class="lpL" x1="660" y1="226" x2="660" y2="262" marker-end="url(#lpArrow)"/>
+        <path class="lpD" d="M600,289 C420,289 300,240 250,120" marker-end="url(#lpArrowG)"/>
+        <text class="lpG" x="150" y="245">pull: teammates' commits come down first</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the five-command loop, with pull bringing the remote down before push sends yours up</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why pull before push is the golden habit<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Local repo vs GitHub copy.</strong> Your commits are yours until you push. <code>origin</code> is the nickname for the GitHub copy - the shared source of truth your teammates also push to.</li>
+          <li><strong>Push sends up, pull brings down.</strong> <code>git push</code> uploads your local commits to origin. <code>git pull</code> downloads commits others pushed and merges them into your branch.</li>
+          <li><strong>Pull before you push.</strong> If a teammate pushed while you were working, pushing straight away gets rejected (your branch has diverged). Pulling first merges their work into yours so your push is a clean fast-forward. Make it reflex: pull, work, add, commit, pull again, push.</li>
+        </ul>
+        <div class="termbox"><span class="cmt"># the whole loop, once</span>
+<span class="cmd">git status</span>
+<span class="out">On branch main - modified: README.md</span>
+<span class="cmt"># stage everything changed in this folder</span>
+<span class="cmd">git add .</span>
+<span class="cmt"># snapshot it with an imperative message</span>
+<span class="cmd">git commit -m "Add usage section to README"</span>
+<span class="cmt"># pull first (grab any teammate commits), then push yours up</span>
+<span class="cmd">git pull</span>
+<span class="cmd">git push</span>
+<span class="out">To github.com:phoebefu6/my-project.git  main -> main</span></div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A two-person data team both edit the same pipeline config on a Monday. The one who forgets to pull first gets "Updates were rejected because the remote contains work you do not have locally." The one who pulls first sees the teammate's change merge in cleanly and pushes in seconds. Same commands, one habit apart.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Fetch vs pull, and where origin comes from<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>git fetch</code> downloads the remote's commits but does not merge them - it just updates your knowledge of what is on origin. <code>git pull</code> is <code>fetch</code> plus <code>merge</code> in one step. When you want to look before you leap, fetch and inspect; when you just want to sync, pull.</p>
+        <p><code>origin</code> is set the first time you connect a repo to GitHub - either by <code>gh repo create ... --source .</code> or by <code>git remote add origin &lt;url&gt;</code>. See it any time with <code>git remote -v</code>. It is just a nickname; you can have several remotes, but <code>origin</code> is the conventional name for "the main one".</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: GITIGNORE ============ -->
+  <section class="section" id="gitignore">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · commit hygiene</span>
+      <h2>.gitignore and commit hygiene <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Not everything belongs in history. Secrets, build junk, and giant dependency folders should never be committed - and .gitignore is how you tell git to pretend they are not there. The stakes are real: once a secret is committed, it lives in history forever, even if you delete the file later. Prevention beats cleanup every time.</p>
+
+    <div class="termbox"><span class="cmt"># .gitignore - one pattern per line, put it at the repo root</span>
+<span class="cmt"># secrets: never commit these</span>
+<span class="cmd">.env</span>
+<span class="cmd">.env.local</span>
+<span class="cmd">*.key</span>
+<span class="cmt"># dependency + build junk: regenerable, huge, noisy</span>
+<span class="cmd">node_modules/</span>
+<span class="cmd">__pycache__/</span>
+<span class="cmd">dist/</span>
+<span class="cmt"># OS and editor cruft</span>
+<span class="cmd">.DS_Store</span>
+<span class="cmd">.vscode/</span></div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Ignore the junk, write messages future-you can grep<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>.gitignore keeps history clean and safe.</strong> Patterns match files git should never stage: secrets (<code>.env</code>), dependencies (<code>node_modules/</code>), build output (<code>dist/</code>), OS cruft (<code>.DS_Store</code>). GitHub's <code>gitignore</code> repo has a ready-made template for every language.</li>
+          <li><strong>Good commit messages are imperative and explain why.</strong> "Add retry to the loader" beats "fixed stuff". The subject line finishes the sentence "If applied, this commit will...". Put the why in the body when it is not obvious - future-you debugging at 2am will thank you.</li>
+          <li><strong>Conventional commits (optional but tidy).</strong> Prefixes like <code>feat:</code>, <code>fix:</code>, <code>docs:</code> make history skimmable and drive automatic changelogs (Session 6). Even solo, <code>fix: handle empty CSV</code> reads beautifully in <code>git log</code>.</li>
+          <li><strong>Atomic commits.</strong> One logical change per commit. If your message needs the word "and", it is probably two commits. Atomic commits make revert and review surgical instead of scary.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The classic incident: a developer commits a <code>.env</code> holding live AWS keys, pushes to a public repo, and within minutes automated scanners find the keys and spin up crypto-mining bills in the thousands. Deleting the file in a later commit does not help - the keys are still sitting in history for anyone to <code>git log</code>. A single <code>.env</code> line in .gitignore prevents the whole story. .gitignore is a security control, not tidiness.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Already tracked? .gitignore will not save you<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>.gitignore only stops <em>untracked</em> files from being staged. If you already committed <code>config.env</code>, adding it to .gitignore does nothing - git is still tracking it. You have to stop tracking it explicitly:</p>
+        <div class="termbox"><span class="cmt"># stop tracking a file but keep it on disk</span>
+<span class="cmd">git rm --cached config.env</span>
+<span class="cmd">git commit -m "Stop tracking config.env; add to .gitignore"</span></div>
+        <p>That removes it from future commits but it is still in past history. For a truly leaked secret, the only real fix is to rotate the secret (make the old one useless) and, if needed, rewrite history - which we flag as an advanced, careful operation. The lesson stands: ignore first, commit never.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: UNDO TOOLBOX ============ -->
+  <section class="section" id="undo">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the undo toolbox</span>
+      <h2>The undo toolbox in safe tiers <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Three tools that people constantly confuse, sorted by how public the mistake is. The whole trick is matching the situation to the tool: have you committed yet? Have you pushed yet? Answer those two questions and the safe tool is obvious. The one rule that keeps you out of trouble: revert in public, reset only locally.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision strip mapping the undo situation to the safe git tool: restore, revert, or reset">
+        <style>
+          .udH { font: 700 15px Inter, sans-serif; fill: #1F2328; }
+          .udQ { font: 700 13px Inter, sans-serif; fill: #1F2328; }
+          .udC { font: 800 15px "SF Mono", Menlo, monospace; fill: #FFFFFF; }
+          .udW { font: 400 12px Inter, sans-serif; fill: #656D76; }
+          .udWn { font: 700 12px Inter, sans-serif; fill: #B42318; }
+        </style>
+        <text class="udH" x="40" y="32">Ask two questions. The answer names the safe tool.</text>
+        <rect x="40" y="66" width="250" height="150" rx="12" fill="#F6F8FA" stroke="#AFB8C1"/>
+        <text class="udQ" x="60" y="96">Haven't committed?</text>
+        <rect x="66" y="118" width="198" height="44" rx="9" fill="#2DA44E"/>
+        <text class="udC" x="112" y="146">git restore</text>
+        <text class="udW" x="60" y="188">Discards working-tree edits.</text>
+        <text class="udW" x="60" y="206">Nothing was snapshotted yet.</text>
+        <rect x="315" y="66" width="250" height="150" rx="12" fill="#F6F8FA" stroke="#AFB8C1"/>
+        <text class="udQ" x="335" y="96">Committed and pushed?</text>
+        <rect x="341" y="118" width="198" height="44" rx="9" fill="#8250DF"/>
+        <text class="udC" x="388" y="146">git revert</text>
+        <text class="udW" x="335" y="188">New commit that undoes it.</text>
+        <text class="udW" x="335" y="206">Safe - keeps shared history.</text>
+        <rect x="590" y="66" width="250" height="150" rx="12" fill="#F6F8FA" stroke="#AFB8C1"/>
+        <text class="udQ" x="610" y="96">Committed, local only?</text>
+        <rect x="616" y="118" width="198" height="44" rx="9" fill="#24292F"/>
+        <text class="udC" x="666" y="146">git reset</text>
+        <text class="udWn" x="610" y="188">Rewrites history - powerful.</text>
+        <text class="udWn" x="610" y="206">Never on a shared branch.</text>
+        <text class="udW" x="40" y="262">The rule, in six words: revert in public, reset only locally.</text>
+        <text class="udW" x="40" y="284">restore = pre-commit · revert = safe public undo · reset = local rewind only</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - situation to tool: restore before commit, revert in public, reset only locally</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Restore, revert, reset - what each really does<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>git restore</code> - discard working-tree changes, before you commit.</strong> Edited a file and want the last committed version back? <code>git restore &lt;file&gt;</code>. Staged something by mistake? <code>git restore --staged &lt;file&gt;</code> unstages it. Nothing committed, nothing risky.</li>
+          <li><strong><code>git revert</code> - make a NEW commit that undoes a public commit.</strong> Safe because it never rewrites history: the bad commit stays, and a new one on top cancels it out. This is the only correct undo for anything you have already pushed and teammates may have pulled.</li>
+          <li><strong><code>git reset</code> - move the branch pointer, rewriting local history.</strong> Powerful and dangerous on shared branches. Three flavors: <code>--soft</code> keeps your changes staged, <code>--mixed</code> (default) keeps them unstaged, <code>--hard</code> throws the changes away entirely. Reset only commits that are still local and unpushed.</li>
+        </ul>
+        <div class="termbox"><span class="cmt"># restore: throw away an uncommitted edit to one file</span>
+<span class="cmd">git restore README.md</span>
+<span class="cmt"># revert: safely undo a commit that is already public</span>
+<span class="cmd">git revert a3f901c</span>
+<span class="out">[main 9ic2f0] Revert "Add broken parser"</span>
+<span class="cmt"># the bad commit is still there; a new commit cancels it out - history intact</span></div>
+        <div class="callout tip">
+          <strong>The one rule that keeps you safe</strong>
+          Revert in public, reset only locally. If the commit has left your machine, <code>revert</code> it. If it is still local and unpushed, <code>reset</code> is fine. When unsure whether something was pushed, treat it as public and revert.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The safety net: reflog undoes almost anything<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Terrified of <code>reset --hard</code>? Git keeps a private log of everywhere HEAD has been - the reflog - for about 90 days. Even after a hard reset that "deleted" commits, they are still reachable:</p>
+        <div class="termbox"><span class="cmt"># every position HEAD has held, newest first</span>
+<span class="cmd">git reflog</span>
+<span class="out">9ic2f0 HEAD@{0}: reset: moving to HEAD~2</span>
+<span class="out">a3f901c HEAD@{1}: commit: Add broken parser</span>
+<span class="cmt"># bring the "lost" commit back by pointing a branch at it</span>
+<span class="cmd">git reset --hard a3f901c</span></div>
+        <p>The reflog is why experienced engineers are calm about local mistakes: almost nothing is truly gone for 90 days. It is local-only, though - it will not recover work you never committed, which is why the habit is: commit early, commit often.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 1 of 3</span>
+      <h2>Wire the loop to GitHub <span class="tag demo">★ 7 min · everyone connects</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Open your <code>my-project</code> from Session 1 (or start fresh: <code>mkdir my-project &amp;&amp; cd my-project &amp;&amp; git init</code>). Confirm with <code>git status</code>.</p></div>
+      <div class="step"><p>Create an origin. Easiest: <code>gh repo create my-project --public --source . --push</code>. No gh? Make an empty repo on github.com, then <code>git remote add origin &lt;url&gt;</code> and <code>git push -u origin main</code>.</p></div>
+      <div class="step"><p>Edit the README (add a line), then run the full loop once: <code>git status</code> → <code>git add .</code> → <code>git commit -m "Add project description"</code> → <code>git pull</code> → <code>git push</code>.</p></div>
+      <div class="step"><p>Open the repo on github.com and confirm your commit is there. That round trip - local edit to visible on GitHub - is the loop you will run all week.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>The -u flag, once per branch</strong>
+      <code>git push -u origin main</code> the first time sets the upstream so that afterwards plain <code>git push</code> and <code>git pull</code> just work. You only need <code>-u</code> once per new branch.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 2 of 3</span>
+      <h2>Add a .gitignore and stop a secret <span class="tag demo">★ 6 min · everyone types</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Create a fake secret file: <code>echo "AWS_KEY=totally-fake-12345" &gt; .env</code>. Run <code>git status</code> - git wants to track <code>.env</code> (it shows up as untracked). That is the danger.</p></div>
+      <div class="step"><p>Create a .gitignore containing one line, <code>.env</code>: <code>echo ".env" &gt; .gitignore</code>. Run <code>git status</code> again - <code>.env</code> has vanished from the list. Git is now pretending it is not there.</p></div>
+      <div class="step"><p>Commit the .gitignore itself: <code>git add .gitignore</code> → <code>git commit -m "Add .gitignore for secrets and junk"</code> → <code>git push</code>. The .gitignore belongs in history; the .env never does.</p></div>
+      <div class="step"><p>Discuss: without that one line, the next <code>git add .</code> would have staged your keys and <code>git push</code> would have published them. Deleting <code>.env</code> later would not remove them from history. Prevention is the whole game.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 3 of 3</span>
+      <h2>Pick the safe undo, every time <span class="tag demo">★ 8 min · everyone sorts</span></h2>
+    </div>
+    <p class="lede">You have three undo tools and six "oh no" moments. Drag each situation to the tool that undoes it safely. Green means you matched the tier correctly - the same two-question logic from the decision strip.</p>
+    <div class="widget" data-widget="sorter" data-config='{
+  "title": "★ Which undo do you reach for?",
+  "intro": "Match each oh-no to the safe tool. Green = correct.",
+  "categories": ["git restore", "git revert", "git reset", "leave it"],
+  "items": [
+    {"t": "You edited a file, have not committed, and want the original back.", "c": 0, "why": "restore discards working-tree changes - nothing was committed yet"},
+    {"t": "A bad commit is already pushed and teammates have pulled it.", "c": 1, "why": "revert adds a new commit that undoes it - safe because it never rewrites shared history"},
+    {"t": "You made three messy local commits, never pushed, and want to redo them.", "c": 2, "why": "reset moves your local branch pointer - fine because nothing was shared yet"},
+    {"t": "You committed exactly what you meant and pushed it cleanly.", "c": 3, "why": "no undo needed - not every commit is a mistake!"},
+    {"t": "Wrong file staged, not committed - unstage it.", "c": 0, "why": "git restore --staged unstages; still the restore family, still pre-commit"},
+    {"t": "Revert a public merge that broke production, keeping the audit trail.", "c": 1, "why": "revert preserves history - critical for a shared main branch"}
+  ]}'></div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>On a shared main branch, an engineer who reflexively reaches for <code>reset --hard</code> to "clean up" a pushed commit rewrites history everyone else already has - and every teammate's next pull explodes with conflicts. The engineer who reaches for <code>revert</code> ships a clean undo commit that CI re-checks and everyone pulls painlessly. The habit you build here is the difference between a five-second fix and a team-wide mess.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 25 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Run the full loop daily</strong> in your my-project repo: status → add → commit → pull → push. Goal: the loop should feel like one motion by Session 3, not five decisions.</li>
+      <li><strong>Write a real .gitignore</strong> for the language you actually use - grab GitHub's template (<code>Node</code>, <code>Python</code>, whatever fits) from github.com/github/gitignore and commit it.</li>
+      <li><strong>Practice one safe revert:</strong> make a throwaway commit, push it, then <code>git revert</code> it. Watch a new commit appear that undoes it, with history intact.</li>
+      <li><strong>Read the self-study cards:</strong> fetch vs pull, already-tracked files, and the reflog safety net.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Why pull before you push?</p>
+      <button class="qopt" type="button">A · Pulling compresses your commits so they upload faster</button>
+      <button class="qopt" type="button">B · If a teammate pushed while you worked, pushing straight away is rejected - pulling first merges their work so your push is clean</button>
+      <button class="qopt" type="button">C · Push does not work at all until you have pulled at least once that day</button>
+      <p class="qwhy">When the remote has commits you do not, your branch has diverged and the push is rejected. Pulling first merges those commits into yours, so the push becomes a clean fast-forward.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · You committed a secret, then deleted the file in a later commit and pushed. Is the secret gone?</p>
+      <button class="qopt" type="button">A · Yes - the latest commit no longer has the file, so it is removed</button>
+      <button class="qopt" type="button">B · Yes, as long as you also run git gc</button>
+      <button class="qopt" type="button">C · No - it still lives in the earlier commit in history; you must rotate the secret and (if needed) rewrite history</button>
+      <p class="qwhy">History is append-only by default. Deleting a file in a new commit leaves the old commit - and the secret - fully readable via git log. The real fix is to rotate the key so the leaked one is useless.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · A bad commit is on a shared branch everyone has pulled. Revert or reset?</p>
+      <button class="qopt" type="button">A · Revert - it adds a new commit that undoes the bad one without rewriting shared history</button>
+      <button class="qopt" type="button">B · Reset --hard - move the branch pointer back so the bad commit disappears</button>
+      <button class="qopt" type="button">C · Either one; on a shared branch they behave identically</button>
+      <p class="qwhy">Reset rewrites history, which breaks every teammate who already has the old commits. Revert is safe in public: the bad commit stays and a new commit cancels it out. Revert in public, reset only locally.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official GitHub Skills coverage</h2>
+    </div>
+    <p class="lede">This session completes the working content of GitHub's Introduction to Git exercise and adds the hygiene and undo skills every builder needs but the official course leaves thin.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to Git (skills/introduction-to-git)</span><span class="note">remotes, origin, push, pull - Part 1 + Build-along 1 complete the CLI working content started in Session 1</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">.gitignore as a security control</span><span class="note">patterns, secrets, the leaked-key incident - Part 2 + Build-along 2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">The undo family: restore / revert / reset</span><span class="note">safe tiers + the public/local rule - Part 3 + the sorter widget</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">reflog - the safety net</span><span class="note">self-study card; recovering after a hard reset</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Conventional commits (feat:/fix:)</span><span class="note">mentioned in Part 2; drives automatic changelogs in Session 6</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 2 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The loop</b><span><code>status</code> → <code>add .</code> → <code>commit -m</code> → <code>pull</code> → <code>push</code>. Run it all day.</span></div>
+      <div class="cheat-item"><b>Pull before push</b><span>Grab teammates' commits first so your push is a clean fast-forward, not a rejection.</span></div>
+      <div class="cheat-item"><b>First connect</b><span><code>gh repo create --source . --push</code>, or <code>git remote add origin &lt;url&gt;</code> + <code>push -u origin main</code>.</span></div>
+      <div class="cheat-item"><b>.gitignore</b><span>Secrets, <code>node_modules/</code>, build output, <code>.DS_Store</code>. A security control - a secret once committed lives in history forever.</span></div>
+      <div class="cheat-item"><b>Undo decision rule</b><span>Not committed → <code>restore</code>. Committed + pushed → <code>revert</code>. Committed, local only → <code>reset</code>. Revert in public, reset only locally.</span></div>
+      <div class="cheat-item"><b>Safety net</b><span><code>git reflog</code> tracks every HEAD move for ~90 days - most local mistakes are recoverable.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 2 of 6 · learn-github-for-builders-with-phoebe · by Phoebe Fu</span>
+    <span><a href="01-git-under-the-hood.html">← Git under the hood</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="03-branches-and-prs-cli.html">Next: Branching + PRs from the CLI →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+<script src="../assets/widgets.js?v=1"></script>
+</body>
+</html>

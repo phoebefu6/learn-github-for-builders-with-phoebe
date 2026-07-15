@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 5 · Actions authoring - learn github for builders with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-github-for-builders-with-phoebe</a> / Session 5 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn GitHub for Builders with Phoebe · Session 5 of 6 · Tech track</div>
+    <h1>Actions authoring: <span class="accent">writing the robots</span></h1>
+    <p class="sub">In the non-tech track you learned to <em>read</em> the robots - the green checks and red Xs that appear on a PR. Today you write them. A GitHub Actions workflow is a small YAML file that runs your checks automatically on GitHub's machines, so broken code never quietly reaches main. We build the single highest-value workflow any team owns: lint and test on every pull request.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Stretch</span>
+      <span class="chip audience">Builders &amp; analysts</span>
+      <span class="chip audience">Terminal or Codespaces</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build-along</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>From reading robots to writing them</h2>
+    </div>
+    <p class="lede">Continuous integration sounds like enterprise jargon; it is actually a simple, powerful idea. Every time someone opens a pull request, a robot checks out the code on a fresh machine and runs your checks - lint, tests, a build. If anything fails, the PR shows a red X and cannot merge. That is it. That one habit is why teams of hundreds ship all day without breaking main. Today you write your first workflow and watch it go from red to green on a real PR.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along - type it in your terminal</span>
+      <span class="pill inkpill">Running artifact: your my-project repo</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A real <code>.github/workflows/ci.yml</code> in your repo that runs on every pull request, the fluency to read the four keys of any workflow (<code>on</code> / <code>jobs</code> / <code>steps</code> / <code>uses</code>+<code>run</code>), the habit of keeping secrets out of your files, and - the actual skill - the ability to open a failed run and read the log to find out why.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: YAML ANATOMY ============ -->
+  <section class="section" id="anatomy">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the shape of a workflow</span>
+      <h2>YAML anatomy of a workflow <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">A workflow is a <code>.yml</code> file that lives in <code>.github/workflows/</code>. GitHub finds it there automatically. It has four keys worth knowing on sight: <code>on</code> is the trigger event (what makes it run), <code>jobs</code> are named units of work, <code>steps</code> are the ordered actions inside a job, and each step is either <code>uses:</code> (a ready-made action from the marketplace) or <code>run:</code> (a shell command you write). It all runs on a fresh GitHub machine called a runner - not your laptop.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Workflow file anatomy: on, jobs, steps, uses and run as nested boxes, with event to runner to steps to check flowing">
+        <style>
+          .wfT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .wfK { font: 700 13px "SF Mono", Menlo, monospace; fill: #FFFFFF; }
+          .wfH { font: 700 14px Inter, sans-serif; fill: #1F2328; }
+          .wfX { font: 400 11.5px Inter, sans-serif; fill: #656D76; }
+          .wfL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+        </style>
+        <defs>
+          <marker id="wfArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 Z" fill="#AFB8C1"/>
+          </marker>
+        </defs>
+        <text class="wfH" x="40" y="28">ci.yml - nested keys, outer to inner</text>
+        <!-- on box -->
+        <rect x="40" y="46" width="360" height="40" rx="9" fill="#0969DA"/>
+        <text class="wfK" x="58" y="71">on:  pull_request</text>
+        <text class="wfX" x="410" y="71">the trigger event</text>
+        <!-- jobs box -->
+        <rect x="40" y="96" width="360" height="176" rx="9" fill="#1B1F23"/>
+        <text class="wfK" x="58" y="121">jobs:  ci</text>
+        <text class="wfX" x="410" y="121" style="fill:#AFB8C1">a named unit, runs on a runner</text>
+        <!-- steps box -->
+        <rect x="66" y="134" width="308" height="122" rx="8" fill="#24292F"/>
+        <text class="wfK" x="82" y="158">steps:</text>
+        <rect x="86" y="170" width="270" height="34" rx="7" fill="#8250DF"/>
+        <text class="wfK" x="100" y="192">uses: actions/checkout</text>
+        <rect x="86" y="212" width="270" height="34" rx="7" fill="#2DA44E"/>
+        <text class="wfK" x="100" y="234">run: npm test</text>
+        <text class="wfX" x="410" y="192">uses = a marketplace action</text>
+        <text class="wfX" x="410" y="234">run = a shell command</text>
+        <!-- flow strip -->
+        <text class="wfH" x="40" y="304">event</text>
+        <line class="wfL" x1="110" y1="299" x2="180" y2="299" marker-end="url(#wfArrow)"/>
+        <text class="wfH" x="190" y="304">runner</text>
+        <line class="wfL" x1="265" y1="299" x2="335" y2="299" marker-end="url(#wfArrow)"/>
+        <text class="wfH" x="345" y="304">steps</text>
+        <line class="wfL" x1="405" y1="299" x2="475" y2="299" marker-end="url(#wfArrow)"/>
+        <text class="wfH" x="485" y="304" style="fill:#1F883D">green check ✓</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - on / jobs / steps nest outer to inner; each step is a uses or a run; the flow goes event → runner → steps → check</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>A minimal workflow, key by key<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Here is the smallest workflow that does something visible. YAML is whitespace-sensitive - the indentation is the structure, so it must be <em>spaces, never tabs</em>.</p>
+        <div class="termbox"><span class="cmt"># .github/workflows/hello.yml</span>
+<span class="out">name: Hello</span>
+<span class="out">on: push</span>
+<span class="out">jobs:</span>
+<span class="out">  greet:</span>
+<span class="out">    runs-on: ubuntu-latest</span>
+<span class="out">    steps:</span>
+<span class="out">      - uses: actions/checkout@v4</span>
+<span class="out">      - run: echo "Hello from a GitHub runner"</span></div>
+        <ul>
+          <li><strong><code>on:</code></strong> - the event that triggers the run. Here, every <code>push</code>. Common values: <code>push</code>, <code>pull_request</code>, and a manual button (see the self-study card).</li>
+          <li><strong><code>jobs:</code></strong> - one or more named units. <code>greet</code> is our only job; <code>runs-on: ubuntu-latest</code> asks GitHub for a fresh Ubuntu machine.</li>
+          <li><strong><code>steps:</code></strong> - the ordered list. Step one <code>uses</code> the marketplace <code>checkout</code> action to pull your code onto the runner; step two <code>run</code>s a shell command.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Runners, and why it is not your laptop<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A runner is a clean virtual machine GitHub spins up just for your run and throws away after. <code>ubuntu-latest</code> is the common default; <code>windows-latest</code> and <code>macos-latest</code> exist too. Because it is fresh every time, a workflow that passes there proves your project actually builds from scratch - not just on your machine with your half-remembered global installs. That is the whole value: the runner is an impartial judge with no memory of your setup.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: REAL CI ============ -->
+  <section class="section" id="ci">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the workflow worth writing</span>
+      <h2>Write real CI: lint + test on every PR <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">The highest-value workflow for any team runs checks automatically on every pull request, so broken code cannot merge. The pattern is always the same five steps: check out the code, set up the language, install dependencies, run the linter, run the tests. The green check and red X you learned to <em>read</em> in the non-tech track are now yours to <em>create</em>.</p>
+
+    <div class="termbox"><span class="cmt"># .github/workflows/ci.yml - runs on every PR and push to main</span>
+<span class="out">name: CI</span>
+<span class="out">on:</span>
+<span class="out">  pull_request:</span>
+<span class="out">  push:</span>
+<span class="out">    branches: [ main ]</span>
+<span class="out">jobs:</span>
+<span class="out">  test:</span>
+<span class="out">    runs-on: ubuntu-latest</span>
+<span class="out">    steps:</span>
+<span class="out">      - uses: actions/checkout@v4</span>
+<span class="out">      - uses: actions/setup-node@v4</span>
+<span class="out">        with:</span>
+<span class="out">          node-version: 20</span>
+<span class="out">      - run: npm ci</span>
+<span class="out">      - run: npm run lint</span>
+<span class="out">      - run: npm test</span></div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Reading the CI recipe, step by step<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>on: pull_request</code></strong> - the point of CI. Checks run <em>before</em> the merge, on the proposed change, so problems surface on the PR and never reach main.</li>
+          <li><strong>checkout then setup</strong> - <code>actions/checkout</code> puts your code on the runner; <code>actions/setup-node</code> (or setup-python) installs the language. Swap those two for any stack.</li>
+          <li><strong>install in a clean box</strong> - <code>npm ci</code> installs exactly what the lockfile says on a fresh machine. This is where "works on my machine" goes to die.</li>
+          <li><strong>lint AND test</strong> - two different safety nets: lint catches style and obvious mistakes, tests catch broken behavior. Run both.</li>
+          <li><strong>matrix builds (one-line mention)</strong> - add a <code>strategy: matrix:</code> block to run the same job across several language versions at once. Powerful; save it for later.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>CI is the reason a team of hundreds can move fast without constantly breaking main. No human remembers to run every test on every change under deadline pressure - but the robot never forgets, never gets tired, and never waves something through because it is Friday. It is the tireless reviewer that runs the full suite on every single PR, so the humans can spend their review time on judgment instead of mechanics.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The same recipe in Python<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Nothing about CI is language-specific - only the setup and command lines change. For a Python project the shape is identical:</p>
+        <div class="termbox"><span class="cmt"># the middle of a Python ci.yml job</span>
+<span class="out">      - uses: actions/checkout@v4</span>
+<span class="out">      - uses: actions/setup-python@v5</span>
+<span class="out">        with:</span>
+<span class="out">          python-version: "3.12"</span>
+<span class="out">      - run: pip install -r requirements.txt</span>
+<span class="out">      - run: ruff check .</span>
+<span class="out">      - run: pytest</span></div>
+        <p>Checkout, set up the language, install deps, lint, test. Learn the shape once and you can write CI for any project you touch.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: SECRETS + FAILURES ============ -->
+  <section class="section" id="secrets">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · secrets, artifacts, and reading failures</span>
+      <h2>Secrets, artifacts, and reading a failed run <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Three things separate a toy workflow from a real one: getting secrets in safely, getting outputs back out, and - most important - being able to read a failure. The actual skill of Actions is not memorizing YAML; it is opening a red run and finding the line that broke.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Secrets in, artifacts out, failures read<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Secrets.</strong> Store any token in <em>Settings → Secrets and variables → Actions</em>, then reference it as <code>${{ secrets.NAME }}</code>. Never paste a real key into the YAML - a hardcoded secret in a workflow file is a leaked secret the moment you push.</li>
+          <li><strong>Artifacts.</strong> Save build output or a test report with <code>actions/upload-artifact</code>, and download it later from the run page. Useful for coverage reports, built binaries, screenshots from a failed test.</li>
+          <li><strong>Reading a failure.</strong> Go to the <em>Actions</em> tab → click the red run → expand the failed step → read the log <em>bottom-up</em>. The last error before the exit is almost always the real one; scroll up only if it points elsewhere.</li>
+          <li><strong>Re-run.</strong> A flaky network step? Use <em>Re-run failed jobs</em> on the run page rather than pushing an empty commit.</li>
+        </ul>
+        <div class="termbox"><span class="cmt"># referencing a secret safely inside a step</span>
+<span class="out">      - run: ./deploy.sh</span>
+<span class="out">        env:</span>
+<span class="out">          API_TOKEN: ${{ secrets.API_TOKEN }}</span>
+<span class="cmt"># uploading a report as an artifact</span>
+<span class="out">      - uses: actions/upload-artifact@v4</span>
+<span class="out">        with:</span>
+<span class="out">          name: coverage</span>
+<span class="out">          path: coverage/</span></div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Other triggers: manual, scheduled, reusable<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>workflow_dispatch</code></strong> - adds a "Run workflow" button in the Actions tab so you can trigger a run by hand. Perfect for a deploy or a one-off maintenance job you do not want on every push.</li>
+          <li><strong>Scheduled (<code>on: schedule</code> with cron)</strong> - run on a timer, e.g. a nightly build or a weekly dependency check. The cron syntax is the standard five fields.</li>
+          <li><strong>Reusable workflows</strong> - factor a common workflow into one file and call it from many repos with <code>uses:</code>, so a whole org shares one CI definition instead of copy-pasting YAML everywhere.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 1 of 3</span>
+      <h2>Author your first CI <span class="tag demo">★ 10 min · everyone types</span></h2>
+    </div>
+    <p class="lede">Write a workflow, open a PR, watch the check run, break it, fix it. This red-to-green loop on a real PR is the whole session in ten minutes.</p>
+    <div class="steps">
+      <div class="step"><p>In my-project, create the folder and file: <code>mkdir -p .github/workflows</code>, then create <code>.github/workflows/ci.yml</code> in your editor (or use GitHub's web workflow editor under the Actions tab).</p></div>
+      <div class="step"><p>Paste a minimal workflow: <code>on:</code> both <code>pull_request</code> and <code>push</code>, one job that runs <code>actions/checkout@v4</code> then a trivial <code>run: echo "CI passing"</code> (or a real test command if your repo has one).</p></div>
+      <div class="step"><p>Commit it on a branch: <code>git switch -c add-ci</code>, <code>git add .github</code>, <code>git commit -m "Add CI workflow"</code>, <code>git push -u origin add-ci</code>. Open a PR with <code>gh pr create --fill</code>.</p></div>
+      <div class="step"><p>Watch the check appear on the PR and turn green. Then <em>make it fail</em> on purpose - change the command to <code>run: exit 1</code>, push, and watch the check go red.</p></div>
+      <div class="step"><p>Fix it - restore the good command, push again, watch it go back to green. You just lived the entire CI loop.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 2 of 3</span>
+      <h2>Is your workflow production-grade? <span class="tag demo">★ 6 min · everyone scores</span></h2>
+    </div>
+    <p class="lede">Tick what your <code>ci.yml</code> actually does, honestly. The unticked rows are your next commits - the score tells you how much your workflow really protects main.</p>
+    <div class="widget" data-widget="checklist" data-config='{
+      "title": "★ CI-ready checklist - is your workflow production-grade?",
+      "intro": "Tick what your ci.yml does. Be honest.",
+      "items": [
+        {"t": "Triggers on pull_request so checks run before merge", "pts": 3, "why": "catching problems on the PR - before main - is the entire point of CI"},
+        {"t": "Checks out the code with actions/checkout", "pts": 1},
+        {"t": "Installs dependencies in a clean runner (not your laptop state)", "pts": 2, "why": "works-on-my-machine dies here: the runner is a fresh box every time"},
+        {"t": "Runs both lint AND tests, not just one", "pts": 2},
+        {"t": "Uses secrets for any token, never a hardcoded key", "pts": 2, "why": "a hardcoded secret in a workflow file is a leaked secret"}
+      ],
+      "verdicts": [
+        {"min": 100, "label": "Production-grade CI", "tone": "good", "note": "This workflow will genuinely protect main. Turn on branch protection (Session 6) to require it."},
+        {"min": 60, "label": "Good start, close the gaps", "tone": "mid", "note": "The unticked rows are your next commits. The pull_request trigger and secrets rows matter most."},
+        {"min": 0, "label": "Not really CI yet", "tone": "bad", "note": "Without a pull_request trigger and real checks, this runs but protects nothing. Build it up row by row."}
+      ]}'></div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 3 of 3</span>
+      <h2>The break-and-read drill <span class="tag demo">★ 5 min · everyone reads a log</span></h2>
+    </div>
+    <p class="lede">The real skill is reading logs, not memorizing YAML. So we break it on purpose and practice finding the error - the move you will make hundreds of times.</p>
+    <div class="steps">
+      <div class="step"><p>Introduce a failing step on purpose - add a <code>run:</code> step with a command that does not exist, like <code>run: npm run nonsense</code>. Commit and push to your PR branch.</p></div>
+      <div class="step"><p>Go to the <em>Actions</em> tab and click the new red run. The failed job has a red X next to it.</p></div>
+      <div class="step"><p>Expand the failed step and read the log <em>bottom-up</em>. Find the actual error line - usually the last thing before the step exited non-zero.</p></div>
+      <div class="step"><p>Fix the step, push, and confirm the run goes green. Notice you diagnosed it entirely from the log - that is the transferable skill.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Read logs bottom-up</strong>
+      A failed run often prints pages of successful output first. The error you want is near the bottom, right before the step reports failure. Start there and scroll up only if it references something earlier.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Add real lint + test CI</strong> to one of your actual repos - not my-project, something you care about. Make it run on <code>pull_request</code>.</li>
+      <li><strong>Add one secret</strong> in Settings and reference it as <code>${{ secrets.NAME }}</code> in a step, even just to <code>echo</code> that it exists (never echo its value).</li>
+      <li><strong>Make a run fail and read the log</strong> - deliberately break a step, open the red run, find the error line, fix it. Reps build the reflex.</li>
+      <li><strong>Read the triggers self-study card</strong> and try adding <code>workflow_dispatch</code> so you get a manual "Run workflow" button.</li>
+      <li><strong>Optional deep end:</strong> the official <em>Hello GitHub Actions</em> and <em>Test with Actions</em> Skills exercises.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · What does the <code>on:</code> key control in a workflow?</p>
+      <button class="qopt" type="button">A · Which programming language the runner installs</button>
+      <button class="qopt" type="button">B · The event that triggers the workflow to run (push, pull_request, schedule…)</button>
+      <button class="qopt" type="button">C · Whether the workflow is turned on or off in Settings</button>
+      <p class="qwhy">on: is the trigger. It names the event - a push, a pull request, a timer, a manual button - that causes GitHub to start the run.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · Why run CI on <code>pull_request</code> specifically?</p>
+      <button class="qopt" type="button">A · It is the only event Actions supports</button>
+      <button class="qopt" type="button">B · It makes runs faster than running on push</button>
+      <button class="qopt" type="button">C · So checks run on the proposed change before it merges - problems surface on the PR, not on main</button>
+      <p class="qwhy">The whole point of CI is catching problems before they reach main. Running on the pull request checks the change while it is still a proposal, so a red X blocks the merge.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · How do you use a token safely in a workflow?</p>
+      <button class="qopt" type="button">A · Store it as a repository secret and reference it with ${{ secrets.NAME }}</button>
+      <button class="qopt" type="button">B · Paste the token directly into the YAML so the runner can read it</button>
+      <button class="qopt" type="button">C · Put the token in the commit message where only maintainers look</button>
+      <p class="qwhy">Secrets live in Settings and are injected at run time as ${{ secrets.NAME }}. A token written into the workflow file is a leaked token the moment you push - it is in the git history forever.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official GitHub Skills coverage</h2>
+    </div>
+    <p class="lede">This session maps to GitHub's own free Skills exercises on Actions. Here is what today covers in full, and what the official exercises add.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Hello GitHub Actions (skills/hello-github-actions)</span><span class="note">author a workflow, the four keys, runners - Part 1 + Build-along 1</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Test with Actions (skills/test-with-actions)</span><span class="note">CI lint + test on a PR - Part 2 + Build-alongs 1 &amp; 3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Secrets</span><span class="note">Settings secrets + ${{ secrets.NAME }} - Part 3 + checklist</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Workflow artifacts (skills/workflow-artifacts)</span><span class="note">upload-artifact shown - Part 3; full exercise goes deeper</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Reusable workflows (skills/reusable-workflows)</span><span class="note">self-study card - concept only</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Matrix builds</span><span class="note">one-line mention in Part 2 - test across versions</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 5 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The four keys</b><span><code>on</code> = trigger · <code>jobs</code> = units · <code>steps</code> = ordered actions · each step is <code>uses:</code> or <code>run:</code>.</span></div>
+      <div class="cheat-item"><b>Where it lives</b><span><code>.github/workflows/*.yml</code> - GitHub finds it automatically. Spaces, never tabs.</span></div>
+      <div class="cheat-item"><b>The CI recipe</b><span>checkout → setup language → install deps → lint → test, triggered <code>on: pull_request</code>.</span></div>
+      <div class="cheat-item"><b>Runners</b><span><code>runs-on: ubuntu-latest</code> - a fresh machine every run, not your laptop.</span></div>
+      <div class="cheat-item"><b>Secrets</b><span>Settings → Secrets. Reference <code>${{ secrets.NAME }}</code>. Never hardcode a token.</span></div>
+      <div class="cheat-item"><b>Read a failure</b><span>Actions tab → red run → expand failed step → read the log bottom-up.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 5 of 6 · learn-github-for-builders-with-phoebe · by Phoebe Fu</span>
+    <span><a href="04-merge-conflicts.html">← Merge conflicts without fear</a> &nbsp;·&nbsp; <a href="06-ship-like-a-pro.html">Next: Ship like a professional →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+<script src="../assets/widgets.js?v=1"></script>
+</body>
+</html>

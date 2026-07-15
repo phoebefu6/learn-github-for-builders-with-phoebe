@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 4 · Merge conflicts without fear - learn github for builders with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-github-for-builders-with-phoebe</a> / Session 4 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn GitHub for Builders with Phoebe · Session 4 of 6 · Tech track</div>
+    <h1>Merge conflicts <span class="accent">without fear</span></h1>
+    <p class="sub">This is the fear-killer session. A merge conflict looks like git yelling at you in symbols, but it is the calmest thing git does: two branches changed the same lines, git refuses to guess which you meant, so it pauses and hands the decision to you. Nothing is broken and nothing is lost. Today you learn to read the markers, resolve like it is routine, and pick the right way to combine work - merge or rebase - every time.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Builders &amp; analysts</span>
+      <span class="chip audience">Terminal or Codespaces</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build-along</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this session kills the fear</h2>
+    </div>
+    <p class="lede">Ask ten builders what scares them about git and nine say "merge conflicts". The fear comes from one wrong belief: that a conflict means you broke something. You did not. A conflict is git being honest - it hit two edits to the same line, it will not silently pick one, so it stops and asks. That is a feature. Once you have resolved five of them the panic is gone and it becomes a 30-second reflex. By the end of today you will manufacture a conflict on purpose, resolve it, and understand exactly when to merge versus rebase.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along - type it in your terminal</span>
+      <span class="pill inkpill">Running artifact: your my-project repo</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The ability to read the <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; ======= &gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> markers on sight, a clean resolve-add-commit reflex, the abort escape hatch when you want out, and a clear rule for merge versus rebase (plus stash and cherry-pick as surgical tools) - so conflicts stop being scary and become routine.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHY + READ ============ -->
+  <section class="section" id="read">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · read the markers</span>
+      <h2>Why conflicts happen and how to read them <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">A conflict happens for exactly one reason: two branches changed the <em>same lines</em> of the same file, and git cannot know which version you want. For every other change - different files, different lines - git merges automatically and you never notice. When it truly cannot choose, it does the responsible thing: it writes <em>both</em> versions into the file, wrapped in markers, and pauses so you can decide. Read the markers top to bottom: your side (HEAD) is above, their side (incoming) is below.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two branches editing the same line collide at a merge, with conflict marker anatomy labeled">
+        <style>
+          .cfT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .cfS { font: 400 11px "SF Mono", Menlo, monospace; fill: #FFFFFF; opacity: .9; }
+          .cfH { font: 700 15px Inter, sans-serif; fill: #1F2328; }
+          .cfX { font: 400 12px Inter, sans-serif; fill: #656D76; }
+          .cfM { font: 700 12px "SF Mono", Menlo, monospace; fill: #B42318; }
+          .cfL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+        </style>
+        <text class="cfH" x="40" y="30">Same line, two edits - git writes both and asks you to choose.</text>
+        <!-- main branch box -->
+        <rect x="40" y="58" width="230" height="48" rx="10" fill="#2DA44E"/>
+        <text class="cfT" x="58" y="80">HEAD (main) edited line 1</text>
+        <text class="cfS" x="58" y="97"># My Project - a tagline</text>
+        <!-- feature branch box -->
+        <rect x="40" y="150" width="230" height="48" rx="10" fill="#8250DF"/>
+        <text class="cfT" x="58" y="172">conflict-demo edited line 1</text>
+        <text class="cfS" x="58" y="189"># My Project - built in public</text>
+        <!-- collision burst -->
+        <line class="cfL" x1="270" y1="82" x2="360" y2="120"/>
+        <line class="cfL" x1="270" y1="174" x2="360" y2="132"/>
+        <circle cx="378" cy="126" r="20" fill="#B42318"/>
+        <text class="cfT" x="368" y="131">!</text>
+        <!-- marker anatomy panel -->
+        <rect x="430" y="52" width="410" height="230" rx="12" fill="#0D1117"/>
+        <text class="cfM" x="450" y="86">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</text>
+        <text class="cfS" x="450" y="110">   # My Project - a tagline</text>
+        <text class="cfM" x="450" y="150">=======</text>
+        <text class="cfS" x="450" y="192">   # My Project - built in public</text>
+        <text class="cfM" x="450" y="234">&gt;&gt;&gt;&gt;&gt;&gt;&gt; conflict-demo</text>
+        <!-- labels on the panel -->
+        <text class="cfX" x="450" y="70" style="fill:#86D9A3">your side, above</text>
+        <text class="cfX" x="450" y="168" style="fill:#AFB8C1">the divider</text>
+        <text class="cfX" x="450" y="252" style="fill:#c4a7f5">their side, below</text>
+        <text class="cfX" x="40" y="318">Nothing is lost - both versions are right there in the file. Your job is to keep the correct combination and delete the three marker lines.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - HEAD side (yours) above the divider, incoming side (theirs) below</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The three marker lines, decoded<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code></strong> - everything below this until the divider is <em>your</em> version, the branch you are currently on.</li>
+          <li><strong><code>=======</code></strong> - the fence. Above it is yours, below it is theirs. It marks nothing itself; it just separates the two sides.</li>
+          <li><strong><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; branch-name</code></strong> - everything from the divider up to here is the <em>incoming</em> version, from the branch you are merging in.</li>
+          <li><strong>Conflicts are normal and safe.</strong> Git did not lose anything - it paused with both versions visible. <code>git status</code> lists every file still to resolve under "Unmerged paths".</li>
+        </ul>
+        <div class="termbox"><span class="cmt"># you merged and git hit a wall - status is your compass</span>
+<span class="cmd">git status</span>
+<span class="out">You have unmerged paths.</span>
+<span class="out">  (fix conflicts and run "git commit")</span>
+<span class="out">Unmerged paths:</span>
+<span class="out">  both modified:   README.md</span>
+<span class="cmt"># open README.md - git wrote BOTH versions in, wrapped in markers</span>
+<span class="out">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+<span class="out"># My Project - a tagline</span>
+<span class="out">=======</span>
+<span class="out"># My Project - built in public</span>
+<span class="out">&gt;&gt;&gt;&gt;&gt;&gt;&gt; conflict-demo</span></div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why most merges have zero conflicts<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Git merges at the line level, not the file level. Two people editing the same file rarely conflict - they conflict only when they touch the <em>same lines</em>. Different functions, different sections, different files all merge cleanly and automatically. This is why active teams merge dozens of branches a day and see conflicts only occasionally.</p>
+        <p>The practical takeaway: the way to reduce conflicts is not to avoid branching - it is to keep branches short-lived and pull <code>main</code> often, so your line and their line rarely drift apart before you combine them.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: RESOLVE ============ -->
+  <section class="section" id="resolve">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · resolve it</span>
+      <h2>Resolve it, in editor or on the web <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Resolving is four moves: open the file, choose the right combination, delete all three marker lines, then stage and commit. The choice is not always "mine or theirs" - very often the right answer is <em>both</em>, edited together into one coherent line. Editors help: VS Code and the GitHub web editor both show accept-current / accept-incoming / accept-both buttons above each conflict.</p>
+
+    <div class="termbox"><span class="cmt"># you edited README to the final line and removed ALL three marker lines</span>
+<span class="cmd">git add README.md</span>
+<span class="cmt"># commit finishes the merge - git pre-fills a merge message for you</span>
+<span class="cmd">git commit</span>
+<span class="out">[main 9f2c1a0] Merge branch 'conflict-demo'</span>
+<span class="cmt"># mid-rebase instead of a merge? this is the equivalent</span>
+<span class="cmd">git rebase --continue</span>
+<span class="cmt"># the escape hatch - undo everything, back to before the merge</span>
+<span class="cmd">git merge --abort</span></div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The resolve loop, and the abort escape hatch<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Pick the combination, not a side.</strong> Read both versions, write the line you actually want - often a blend. There is no rule that says you must keep one intact.</li>
+          <li><strong>Delete every marker line.</strong> The <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> lines must all be gone. If a build later complains about "unexpected <code>&lt;&lt;&lt;</code>", you left a marker in.</li>
+          <li><strong>Stage, then finish.</strong> <code>git add</code> the resolved file (that tells git "this one is handled"), then <code>git commit</code> for a merge, or <code>git merge --continue</code> / <code>git rebase --continue</code> depending on what you were doing.</li>
+          <li><strong>Want out? <code>git merge --abort</code>.</strong> It resets you cleanly to the moment before the merge, as if you never started. No damage. Panic button, fully safe.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Every engineer remembers their first conflict - it looks like the terminal caught fire and it can eat 20 minutes of pure dread. The tenth one takes 30 seconds. Conflict resolution is pure pattern recognition; the only way through is reps. And the tempting mistake - avoiding branches so you never hit a conflict - backfires badly: it produces giant, weeks-old merges that conflict on everything at once. Small, frequent merges are how teams stay conflict-light.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Resolving in the GitHub web editor<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>When a PR reports "This branch has conflicts that must be resolved", GitHub offers a web conflict editor right in the browser - no local checkout needed. It shows the same markers with the same accept buttons, and a "Mark as resolved" then "Commit merge" flow. It is perfect for a small text conflict (a README, a config line) you want to clear without switching context.</p>
+        <p>For anything with logic - code that has to actually run after the merge - resolve locally in your editor where you can run the tests before you commit. The web editor cannot run your build.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: MERGE VS REBASE ============ -->
+  <section class="section" id="merge-rebase">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · two ways to combine</span>
+      <h2>Merge vs rebase, and two surgical tools <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">There are two ways to bring one branch's work into another. <strong>Merge</strong> ties the two histories together with a merge commit that has two parents - it preserves exactly what happened, when. <strong>Rebase</strong> lifts your commits off your branch and replays them one by one on top of the latest main - a clean, linear history, but it rewrites your commit hashes. Both are correct; they optimize for different things.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Merge preserves two histories with a merge commit; rebase replays commits linearly on the main tip">
+        <style>
+          .mrT { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+          .mrH { font: 700 14px Inter, sans-serif; fill: #1F2328; }
+          .mrX { font: 400 11.5px Inter, sans-serif; fill: #656D76; }
+          .mrG { font: 700 12px Inter, sans-serif; fill: #1F883D; }
+          .mrP { font: 700 12px Inter, sans-serif; fill: #8250DF; }
+          .mrL { stroke: #AFB8C1; stroke-width: 2.5; fill: none; }
+        </style>
+        <!-- MERGE side -->
+        <text class="mrH" x="40" y="28">Merge - keeps both lines, adds a merge commit (2 parents)</text>
+        <line class="mrL" x1="70" y1="90" x2="150" y2="90"/>
+        <line class="mrL" x1="230" y1="90" x2="310" y2="90"/>
+        <circle cx="55" cy="90" r="15" fill="#1B1F23"/>
+        <circle cx="165" cy="90" r="15" fill="#24292F"/>
+        <circle cx="325" cy="90" r="15" fill="#2DA44E"/>
+        <text class="mrG" x="352" y="94">main</text>
+        <!-- feature branch curving down and back -->
+        <line class="mrL" x1="165" y1="103" x2="230" y2="150"/>
+        <circle cx="245" cy="160" r="15" fill="#8250DF"/>
+        <line class="mrL" x1="260" y1="150" x2="315" y2="103"/>
+        <text class="mrP" x="205" y="192">feature commit</text>
+        <text class="mrX" x="300" y="80">merge commit</text>
+        <!-- REBASE side -->
+        <text class="mrH" x="40" y="230">Rebase - replays your commits on the main tip, one line</text>
+        <line class="mrL" x1="70" y1="278" x2="150" y2="278"/>
+        <line class="mrL" x1="230" y1="278" x2="310" y2="278"/>
+        <line class="mrL" x1="390" y1="278" x2="470" y2="278"/>
+        <circle cx="55" cy="278" r="15" fill="#1B1F23"/>
+        <circle cx="165" cy="278" r="15" fill="#24292F"/>
+        <circle cx="325" cy="278" r="15" fill="#2DA44E"/>
+        <circle cx="485" cy="278" r="15" fill="#8250DF"/>
+        <text class="mrP" x="512" y="282">replayed</text>
+        <text class="mrX" x="600" y="282" style="fill:#B42318">new hashes - history rewritten</text>
+        <text class="mrX" x="600" y="90">preserves what really happened</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - merge curves the branch back with a merge commit; rebase replants your commits linearly and gives them new hashes</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The golden rule, and when to reach for each<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="callout tip">
+          <strong>The golden rule of rebase</strong>
+          Never rebase commits you have already pushed and shared. Rebase rewrites history - it gives your commits new hashes - and if a teammate already has the old ones, you have just handed everyone two versions of the same work. Rebase your own <em>local</em> commits freely; leave shared history alone.
+        </div>
+        <ul>
+          <li><strong>Merge for shared branches.</strong> Bringing a finished feature into <code>main</code>, or integrating a long-lived branch for a release - use merge. The merge commit documents when and where the integration happened, and it never rewrites anyone's history.</li>
+          <li><strong>Rebase for tidying your own local work.</strong> Before you open a PR, rebase your messy local branch onto the latest <code>main</code> for a clean, linear story. Fine, because those commits are still yours alone.</li>
+          <li><strong><code>git stash</code> - shelve dirty work.</strong> Mid-edit and need to switch branches urgently? <code>git stash</code> tucks your uncommitted changes away, <code>git stash pop</code> brings them back. A clean pocket, not a commit.</li>
+          <li><strong><code>git cherry-pick &lt;hash&gt;</code> - grab one commit.</strong> Want just one bugfix from another branch without merging all of it? Cherry-pick copies that single commit onto your current branch by its hash.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Interactive rebase to polish before a PR <span class="tag concept">advanced</span><span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>git rebase -i main</code> opens an interactive editor listing your local commits, and lets you <em>squash</em> several messy commits into one, <em>reword</em> unclear messages, or <em>drop</em> a commit entirely before you open the PR - so reviewers see a clean, deliberate story instead of "wip", "fix", "fix again". It is the single best way to make your history read well. This is advanced and strictly for your own unpushed commits - the golden rule still applies: never interactive-rebase anything you have already shared.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 1 of 3</span>
+      <h2>Manufacture and resolve a conflict <span class="tag demo">★ 10 min · everyone types</span></h2>
+    </div>
+    <p class="lede">The fastest way to lose the fear is to cause a conflict on purpose in a safe place. We do exactly that in your my-project repo.</p>
+    <div class="steps">
+      <div class="step"><p>On <code>main</code>, edit line 1 of <code>README.md</code> to something like <code># My Project - a tagline</code>. Then <code>git add README.md</code> and <code>git commit -m "Add tagline to README"</code>.</p></div>
+      <div class="step"><p>Make the colliding branch from an earlier point: <code>git switch -c conflict-demo HEAD~1</code>. Edit the <em>same line 1</em> differently - <code># My Project - built in public</code> - then <code>git add README.md</code> and <code>git commit -m "Reword README heading"</code>.</p></div>
+      <div class="step"><p>Go back and merge it in: <code>git switch main</code>, then <code>git merge conflict-demo</code>. Git stops and reports a conflict in <code>README.md</code> - this is the moment. Run <code>git status</code> and read "Unmerged paths".</p></div>
+      <div class="step"><p>Open <code>README.md</code>. Find the three markers, keep the combination you actually want (try blending both), and delete the <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> lines.</p></div>
+      <div class="step"><p><code>git add README.md</code>, then <code>git commit</code> to finish the merge. Finally <code>git log --graph --oneline --all</code> - see the merge commit tie both lines together. You just did the scary thing. It was fine.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 2 of 3</span>
+      <h2>Merge, rebase, or neither? <span class="tag demo">★ 6 min · everyone sorts</span></h2>
+    </div>
+    <p class="lede">Now cement the judgment. Drag each situation to the right way of combining work. Green means correct - if you are unsure, guess and read the "why".</p>
+    <div class="widget" data-widget="sorter" data-config='{
+      "title": "★ Merge or rebase (or neither)?",
+      "intro": "Pick the right combine for each situation. Green = correct.",
+      "categories": ["Merge", "Rebase (local)", "Never rebase", "Stash / cherry-pick"],
+      "items": [
+        {"t": "Bring a finished feature branch into shared main, keeping the true history.", "c": 0, "why": "merge preserves what happened with a merge commit - the safe default for shared branches"},
+        {"t": "Tidy your own 5 messy local commits into a clean line before opening the PR.", "c": 1, "why": "rebase onto main gives linear history - fine because these commits are still local"},
+        {"t": "A colleague already pulled your branch and you want to rebase its pushed commits.", "c": 2, "why": "the golden rule: never rebase shared/pushed history - it rewrites what others have"},
+        {"t": "You are mid-edit but must urgently switch to a hotfix branch.", "c": 3, "why": "git stash shelves your dirty work so you can switch cleanly, then stash pop to resume"},
+        {"t": "Grab just one bugfix commit from another branch without merging all of it.", "c": 3, "why": "git cherry-pick copies a single commit by hash"},
+        {"t": "Combine a teammate long-lived branch into main for a release.", "c": 0, "why": "merge - shared history, and the merge commit documents the integration point"}
+      ]}'></div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Build-along 3 of 3</span>
+      <h2>The stash drill <span class="tag demo">★ 6 min · everyone types</span></h2>
+    </div>
+    <p class="lede">Stash is the tool you did not know you needed until an urgent hotfix lands while your working tree is a mess. Feel it shelve and restore.</p>
+    <div class="steps">
+      <div class="step"><p>On any branch of my-project, make a dirty edit - change a line in <code>notes.md</code> but do <em>not</em> commit it. Run <code>git status</code> and see it modified.</p></div>
+      <div class="step"><p><code>git stash</code>. Run <code>git status</code> again - your working tree is clean, the edit is shelved. It did not disappear; it is in the stash.</p></div>
+      <div class="step"><p><code>git switch main</code> (or any other branch), do a quick imaginary hotfix, then <code>git switch</code> back to where you were.</p></div>
+      <div class="step"><p><code>git stash pop</code>. Your dirty edit is restored exactly as it was. That is the whole loop: shelve, switch, restore.</p></div>
+      <div class="step"><p><strong>Optional cherry-pick:</strong> run <code>git log --oneline conflict-demo</code>, copy one commit hash, then on <code>main</code> run <code>git cherry-pick &lt;hash&gt;</code> to graft just that one commit across.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Stash names its shelves</strong>
+      <code>git stash list</code> shows every shelved change; <code>git stash pop</code> takes the most recent, <code>git stash apply stash@{1}</code> takes a specific one. It is a stack, so you can shelve more than one thing.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 25 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Cause and resolve three conflicts</strong> on a throwaway repo - not my-project, somewhere you can be reckless. Reps are what kill the fear; by the third one it is muscle memory.</li>
+      <li><strong>Rebase a local branch</strong> onto <code>main</code> before your next PR and watch the history go linear. Confirm the commits are still local first.</li>
+      <li><strong>Read the interactive-rebase self-study card</strong> and try <code>git rebase -i main</code> on a branch with a couple of throwaway commits - squash two into one.</li>
+      <li><strong>Optional deep end:</strong> the official <em>Resolve merge conflicts</em> Skills exercise (github.com/skills/resolve-merge-conflicts) - a full guided conflict in a real repo.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · In a conflict, what does the <code>=======</code> line separate?</p>
+      <button class="qopt" type="button">A · The staged version from the unstaged version</button>
+      <button class="qopt" type="button">B · Your side (HEAD, above) from the incoming side (theirs, below)</button>
+      <button class="qopt" type="button">C · The old file from a backup git made automatically</button>
+      <p class="qwhy">The divider fences the two versions: everything above it is HEAD (your current branch), everything below it up to the &gt;&gt;&gt;&gt;&gt;&gt;&gt; marker is the branch you are merging in.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What is the golden rule of rebase?</p>
+      <button class="qopt" type="button">A · Always rebase instead of merging - it is the modern way</button>
+      <button class="qopt" type="button">B · Rebase only files, never whole branches</button>
+      <button class="qopt" type="button">C · Never rebase commits you have already pushed and shared</button>
+      <p class="qwhy">Rebase rewrites history and gives commits new hashes. If others already have the old commits, rebasing shared history hands everyone conflicting copies. Rebase your local work only.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What does <code>git merge --abort</code> do?</p>
+      <button class="qopt" type="button">A · Cleanly resets you to the state just before the merge started</button>
+      <button class="qopt" type="button">B · Deletes the branch you were merging in</button>
+      <button class="qopt" type="button">C · Forces the merge through, keeping your side automatically</button>
+      <p class="qwhy">It is the fully safe escape hatch - it undoes the in-progress merge and returns your working tree to exactly where you were before, as if nothing happened.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official GitHub Skills coverage</h2>
+    </div>
+    <p class="lede">This session maps to GitHub's own free CLI-based Skills exercises. Here is what today covers in full, and what the official exercises add.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Resolve merge conflicts (skills/resolve-merge-conflicts)</span><span class="note">full - reading markers, resolving, add + commit, abort: Parts 1-2 + Build-along 1</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to Git (merge / rebase / stash)</span><span class="note">the combine model and surgical tools - Part 3 + Build-along 3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">cherry-pick</span><span class="note">tool level - Part 3 + optional Build-along 3 step</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Interactive rebase (squash / reword)</span><span class="note">self-study card + homework - advanced, own commits only</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">rerere (reuse recorded resolution)</span><span class="note">mention only - git can replay past resolutions; out of scope today</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 4 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Marker anatomy</b><span><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> = yours (above) · <code>=======</code> = divider · <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; branch</code> = theirs (below).</span></div>
+      <div class="cheat-item"><b>Resolve loop</b><span>Edit to the right combination → delete all 3 markers → <code>git add</code> → <code>git commit</code>.</span></div>
+      <div class="cheat-item"><b>Escape hatch</b><span><code>git merge --abort</code> resets you to before the merge. Fully safe.</span></div>
+      <div class="cheat-item"><b>Golden rule</b><span>Never rebase commits you have pushed and shared. Local commits only.</span></div>
+      <div class="cheat-item"><b>Merge vs rebase</b><span>Merge = shared branches, true history, two parents. Rebase = tidy your own local line before a PR.</span></div>
+      <div class="cheat-item"><b>Surgical tools</b><span><code>git stash</code> / <code>stash pop</code> to shelve dirty work · <code>git cherry-pick &lt;hash&gt;</code> for one commit.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 4 of 6 · learn-github-for-builders-with-phoebe · by Phoebe Fu</span>
+    <span><a href="03-branches-and-prs-cli.html">← Branching + PRs from the CLI</a> &nbsp;·&nbsp; <a href="05-actions-authoring.html">Next: Actions authoring →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+<script src="../assets/widgets.js?v=1"></script>
+</body>
+</html>
