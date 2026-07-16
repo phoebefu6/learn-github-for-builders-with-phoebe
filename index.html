@@ -54,6 +54,17 @@
 
   .newto { margin-top: 1.4rem; border: 1px solid var(--hairline); border-left: 4px solid var(--indigo); border-radius: var(--radius); padding: .9rem 1.2rem; background: var(--indigo-50); color: var(--ink); font-size: .9rem; }
   .newto a { color: var(--indigo-deep); font-weight: 700; }
+
+  .mm-section { margin-top: 1.6rem; }
+  .mm-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .2rem; }
+  .mm-section .mm-lede { color: var(--muted); font-size: .92rem; margin-bottom: .4rem; }
+  .mm-wrap { border: 1px solid var(--hairline); border-radius: var(--radius); background: linear-gradient(180deg,#fff, #F6FAFD); padding: .6rem; overflow-x: auto; }
+  .mm-svg { width: 100%; height: auto; display: block; max-width: 60rem; margin: 0 auto; min-width: 34rem; }
+  .mm-link { cursor: pointer; text-decoration: none; }
+  .mm-node rect { transition: opacity .15s ease, filter .15s ease; }
+  .mm-node text { pointer-events: none; }
+  .mm-link:hover .mm-node rect { filter: brightness(1.06); }
+  .mm-edge { transition: opacity .15s ease; }
 </style>
 </head>
 <body>
@@ -76,6 +87,12 @@
 </header>
 
 <main class="wrap">
+  <section class="section mm-section">
+    <h2>The knowledge map 🧠</h2>
+    <p class="mm-lede">The whole course at a glance - hover a session to spotlight its concepts, click any node to jump in.</p>
+    <div class="mm-wrap"><div id="mindmap"></div></div>
+  </section>
+
   <section class="section">
     <div class="course-grid">
       <a class="course-card" href="courses/01-git-under-the-hood.html" style="--diff:#34D399">
@@ -171,6 +188,45 @@
   </footer>
 </main>
 
+<script>
+window.MINDMAP_DATA = {
+  title: "GitHub for\nBuilders",
+  centerColor: "#1B1F23",
+  sessions: [
+    { label: "Git under\nthe hood", href: "courses/01-git-under-the-hood.html", color: "#34D399",
+      concepts: [
+        { label: "The core model", href: "courses/01-git-under-the-hood.html" },
+        { label: "Install & config", href: "courses/01-git-under-the-hood.html" },
+        { label: "First commits", href: "courses/01-git-under-the-hood.html" } ] },
+    { label: "The daily\nloop", href: "courses/02-the-daily-loop.html", color: "#34D399",
+      concepts: [
+        { label: "The daily rhythm", href: "courses/02-the-daily-loop.html" },
+        { label: "Commit hygiene", href: "courses/02-the-daily-loop.html" },
+        { label: "Undo toolbox", href: "courses/02-the-daily-loop.html" } ] },
+    { label: "Branches\n& PRs (CLI)", href: "courses/03-branches-and-prs-cli.html", color: "#FBBF24",
+      concepts: [
+        { label: "Branch & switch", href: "courses/03-branches-and-prs-cli.html" },
+        { label: "PRs via gh", href: "courses/03-branches-and-prs-cli.html" },
+        { label: "The reviewer side", href: "courses/03-branches-and-prs-cli.html" } ] },
+    { label: "Merge\nconflicts", href: "courses/04-merge-conflicts.html", color: "#FBBF24",
+      concepts: [
+        { label: "Read the markers", href: "courses/04-merge-conflicts.html" },
+        { label: "Resolve it", href: "courses/04-merge-conflicts.html" },
+        { label: "Merge vs rebase", href: "courses/04-merge-conflicts.html" } ] },
+    { label: "Actions\nauthoring", href: "courses/05-actions-authoring.html", color: "#FB923C",
+      concepts: [
+        { label: "Workflow shape", href: "courses/05-actions-authoring.html" },
+        { label: "CI worth writing", href: "courses/05-actions-authoring.html" },
+        { label: "Secrets & logs", href: "courses/05-actions-authoring.html" } ] },
+    { label: "Ship like\na pro", href: "courses/06-ship-like-a-pro.html", color: "#FB923C",
+      concepts: [
+        { label: "Tags & releases", href: "courses/06-ship-like-a-pro.html" },
+        { label: "Branch protection", href: "courses/06-ship-like-a-pro.html" },
+        { label: "Auto-deploy", href: "courses/06-ship-like-a-pro.html" } ] }
+  ]
+};
+</script>
+<script src="assets/mindmap.js?v=1"></script>
 <script src="assets/app.js?v=1"></script>
 </body>
 </html>
