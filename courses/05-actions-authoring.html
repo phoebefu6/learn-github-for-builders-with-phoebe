@@ -250,7 +250,61 @@
       <div class="step"><p>In my-project, create the folder and file: <code>mkdir -p .github/workflows</code>, then create <code>.github/workflows/ci.yml</code> in your editor (or use GitHub's web workflow editor under the Actions tab).</p></div>
       <div class="step"><p>Paste a minimal workflow: <code>on:</code> both <code>pull_request</code> and <code>push</code>, one job that runs <code>actions/checkout@v4</code> then a trivial <code>run: echo "CI passing"</code> (or a real test command if your repo has one).</p></div>
       <div class="step"><p>Commit it on a branch: <code>git switch -c add-ci</code>, <code>git add .github</code>, <code>git commit -m "Add CI workflow"</code>, <code>git push -u origin add-ci</code>. Open a PR with <code>gh pr create --fill</code>.</p></div>
-      <div class="step"><p>Watch the check appear on the PR and turn green. Then <em>make it fail</em> on purpose - change the command to <code>run: exit 1</code>, push, and watch the check go red.</p></div>
+      <div class="step"><p>Watch the check appear on the PR and turn green. Then <em>make it fail</em> on purpose - change the command to <code>run: exit 1</code>, push, and watch the check go red.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A six-station rail of the exact commands that open and pass a pull request: git switch -c add-ci, git add .github, git commit -m Add CI workflow, git push -u add-ci, gh pr create --fill, and the check that goes red then green.">
+    <style>
+      .gh2aT { font: 700 13px Inter, sans-serif; fill: #1F2328; }
+      .gh2aB { font: 700 9.5px Inter, sans-serif; fill: #FFFFFF; letter-spacing: .03em; }
+      .gh2aL { font: 600 11.5px monospace; fill: #1F2328; }
+      .gh2aN { font: 400 12px Inter, sans-serif; fill: #656D76; }
+    </style>
+    <rect x="0" y="0" width="880" height="250" fill="#FFFFFF"/>
+    <text class="gh2aT" x="40" y="28">One PR, six real commands</text>
+
+    <line x1="70" y1="120" x2="810" y2="120" stroke="#D8DEE4" stroke-width="2"/>
+
+    <circle cx="70" cy="120" r="7" fill="#2DA44E"/>
+    <rect x="26" y="132" width="88" height="17" rx="8" fill="#2DA44E"/>
+    <text class="gh2aB" x="70" y="144" text-anchor="middle">BRANCH</text>
+    <text class="gh2aL" x="70" y="168" text-anchor="middle">git switch -c</text>
+    <text class="gh2aL" x="70" y="184" text-anchor="middle">add-ci</text>
+
+    <circle cx="218" cy="120" r="7" fill="#2DA44E"/>
+    <rect x="174" y="132" width="88" height="17" rx="8" fill="#2DA44E"/>
+    <text class="gh2aB" x="218" y="144" text-anchor="middle">STAGE</text>
+    <text class="gh2aL" x="218" y="168" text-anchor="middle">git add</text>
+    <text class="gh2aL" x="218" y="184" text-anchor="middle">.github</text>
+
+    <circle cx="366" cy="120" r="7" fill="#2DA44E"/>
+    <rect x="322" y="132" width="88" height="17" rx="8" fill="#2DA44E"/>
+    <text class="gh2aB" x="366" y="144" text-anchor="middle">COMMIT</text>
+    <text class="gh2aL" x="366" y="168" text-anchor="middle">git commit -m</text>
+    <text class="gh2aL" x="366" y="184" text-anchor="middle">"Add CI workflow"</text>
+
+    <circle cx="514" cy="120" r="7" fill="#2DA44E"/>
+    <rect x="470" y="132" width="88" height="17" rx="8" fill="#2DA44E"/>
+    <text class="gh2aB" x="514" y="144" text-anchor="middle">PUSH</text>
+    <text class="gh2aL" x="514" y="168" text-anchor="middle">git push -u</text>
+    <text class="gh2aL" x="514" y="184" text-anchor="middle">add-ci</text>
+
+    <circle cx="662" cy="120" r="7" fill="#8250DF"/>
+    <rect x="618" y="132" width="88" height="17" rx="8" fill="#8250DF"/>
+    <text class="gh2aB" x="662" y="144" text-anchor="middle">OPEN PR</text>
+    <text class="gh2aL" x="662" y="168" text-anchor="middle">gh pr create</text>
+    <text class="gh2aL" x="662" y="184" text-anchor="middle">--fill</text>
+
+    <circle cx="810" cy="120" r="7" fill="#991B1B"/>
+    <rect x="766" y="132" width="88" height="17" rx="8" fill="#991B1B"/>
+    <text class="gh2aB" x="810" y="144" text-anchor="middle">CHECK</text>
+    <text class="gh2aL" x="810" y="168" text-anchor="middle">red, then</text>
+    <text class="gh2aL" x="810" y="184" text-anchor="middle">green</text>
+
+    <text class="gh2aN" x="40" y="222">The red-to-green loop on a real PR: break the check on purpose, then fix it and watch it pass again.</text>
+  </svg>
+  <figcaption>&#128269; Click to zoom - five commands take a branch from idea to a green check</figcaption>
+</figure>
+</div>
       <div class="step"><p>Fix it - restore the good command, push again, watch it go back to green. You just lived the entire CI loop.</p></div>
     </div>
   </section>
@@ -289,7 +343,37 @@
     <div class="steps">
       <div class="step"><p>Introduce a failing step on purpose - add a <code>run:</code> step with a command that does not exist, like <code>run: npm run nonsense</code>. Commit and push to your PR branch.</p></div>
       <div class="step"><p>Go to the <em>Actions</em> tab and click the new red run. The failed job has a red X next to it.</p></div>
-      <div class="step"><p>Expand the failed step and read the log <em>bottom-up</em>. Find the actual error line - usually the last thing before the step exited non-zero.</p></div>
+      <div class="step"><p>Expand the failed step and read the log <em>bottom-up</em>. Find the actual error line - usually the last thing before the step exited non-zero.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Before and after view of reading a failed GitHub Actions run: reading top to bottom wastes time on pages of passing output, while reading the log bottom up finds the actual error, such as the injected failing command npm run nonsense, right before the step reports failure.">
+    <style>
+      .gh2bT { font: 700 13px Inter, sans-serif; fill: #1F2328; }
+      .gh2bH { font: 700 13px Inter, sans-serif; fill: #991B1B; }
+      .gh2bHg { font: 700 13px Inter, sans-serif; fill: #1B1F23; }
+      .gh2bB { font: 400 12px Inter, sans-serif; fill: #1F2328; }
+      .gh2bC { font: 400 11.5px monospace; fill: #1F2328; }
+      .gh2bN { font: 400 12px Inter, sans-serif; fill: #656D76; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="gh2bT" x="40" y="28">Reading a failed run: top-down vs bottom-up</text>
+
+    <rect x="40" y="50" width="390" height="180" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+    <text class="gh2bH" x="58" y="84">&#10007; Read top to bottom</text>
+    <text class="gh2bB" x="58" y="114">pages of passing output first</text>
+    <text class="gh2bB" x="58" y="134">real error is near the bottom</text>
+    <text class="gh2bB" x="58" y="154">easy to miss, easy to misread</text>
+
+    <rect x="450" y="50" width="390" height="180" rx="12" fill="#DAFBE1" stroke="#2DA44E" stroke-width="1.5"/>
+    <text class="gh2bHg" x="468" y="84">&#10003; Read log bottom-up</text>
+    <text class="gh2bC" x="468" y="114">"npm run nonsense"</text>
+    <text class="gh2bB" x="468" y="134">last line before exit = cause</text>
+    <text class="gh2bB" x="468" y="154">scroll up only if it points</text>
+
+    <text class="gh2bN" x="40" y="276">The last error before the exit is almost always the real one - scroll up only if it points elsewhere.</text>
+  </svg>
+  <figcaption>&#128269; Click to zoom - the real error sits right before the exit, read bottom-up</figcaption>
+</figure>
+</div>
       <div class="step"><p>Fix the step, push, and confirm the run goes green. Notice you diagnosed it entirely from the log - that is the transferable skill.</p></div>
     </div>
     <div class="callout tip">

@@ -64,6 +64,35 @@
       <h2>Snapshots and pointers, not diffs <span class="tag concept">5 min live</span></h2>
     </div>
     <p class="lede">The single misconception that makes git confusing: people think it stores changes. It does not. Every commit is a full snapshot of your project, and git is ruthlessly efficient about not duplicating unchanged files. A branch is not a copy - it is a movable pointer to one snapshot. HEAD is the pointer that says "you are here".</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Before and after view of git's mental model: the common misconception that git stores changes as diffs, versus the actual model where every commit is a complete snapshot and a branch is just a movable pointer to one.">
+    <style>
+      .gh1bT { font: 700 13px Inter, sans-serif; fill: #1F2328; }
+      .gh1bH { font: 700 13px Inter, sans-serif; fill: #991B1B; }
+      .gh1bHg { font: 700 13px Inter, sans-serif; fill: #1B1F23; }
+      .gh1bB { font: 400 12px Inter, sans-serif; fill: #1F2328; }
+      .gh1bN { font: 400 12px Inter, sans-serif; fill: #656D76; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="gh1bT" x="40" y="28">The single misconception, and the actual model</text>
+
+    <rect x="40" y="50" width="390" height="180" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+    <text class="gh1bH" x="58" y="84">&#10007; Git stores changes</text>
+    <text class="gh1bB" x="58" y="114">each commit = a diff</text>
+    <text class="gh1bB" x="58" y="134">history is a chain of edits</text>
+    <text class="gh1bB" x="58" y="154">confusing to reason about</text>
+
+    <rect x="450" y="50" width="390" height="180" rx="12" fill="#DAFBE1" stroke="#2DA44E" stroke-width="1.5"/>
+    <text class="gh1bHg" x="468" y="84">&#10003; Git stores snapshots</text>
+    <text class="gh1bB" x="468" y="114">each commit = full snapshot</text>
+    <text class="gh1bB" x="468" y="134">git is efficient about reuse</text>
+    <text class="gh1bB" x="468" y="154">a branch is a pointer, not a copy</text>
+
+    <text class="gh1bN" x="40" y="276">Creating a branch writes one 40-character file - that is why engineers branch constantly.</text>
+  </svg>
+  <figcaption>&#128269; Click to zoom - commits are full snapshots, not diffs</figcaption>
+</figure>
+
 
     <figure class="zoomable">
       <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Commit chain of snapshots with main and feature branch pointers and HEAD">
@@ -128,6 +157,46 @@
       <summary><span class="mode self">Self-study</span>The three zones: working tree, staging, repository<span class="mini">3 min read</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Every file lives in one of three zones, and every basic command just moves files between them. This is the model that makes <code>add</code> and <code>commit</code> stop feeling arbitrary.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A three-station flow showing git's zones: files start in the working tree, move to the staging area with git add, and become permanent snapshots in the repository with git commit.">
+    <defs>
+      <marker id="arrGh1a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#1B1F23"/>
+      </marker>
+    </defs>
+    <style>
+      .gh1aT { font: 700 13px Inter, sans-serif; fill: #1F2328; }
+      .gh1aZ { font: 700 13px Inter, sans-serif; fill: #1F2328; }
+      .gh1aS { font: 400 11.5px Inter, sans-serif; fill: #656D76; }
+      .gh1aCmd { font: 700 11px monospace; fill: #1B1F23; }
+      .gh1aN { font: 400 12px Inter, sans-serif; fill: #656D76; }
+    </style>
+    <rect x="0" y="0" width="880" height="250" fill="#FFFFFF"/>
+    <text class="gh1aT" x="40" y="28">Three zones, three commands</text>
+
+    <rect x="50" y="100" width="200" height="56" rx="10" fill="#DAFBE1" stroke="#2DA44E" stroke-width="1.6"/>
+    <text class="gh1aZ" x="150" y="124" text-anchor="middle">WORKING TREE</text>
+    <text class="gh1aS" x="150" y="142" text-anchor="middle">your files on disk</text>
+
+    <rect x="340" y="100" width="200" height="56" rx="10" fill="#DAFBE1" stroke="#2DA44E" stroke-width="1.6"/>
+    <text class="gh1aZ" x="440" y="124" text-anchor="middle">STAGING AREA</text>
+    <text class="gh1aS" x="440" y="142" text-anchor="middle">the index</text>
+
+    <rect x="630" y="100" width="200" height="56" rx="10" fill="#DAFBE1" stroke="#2DA44E" stroke-width="1.6"/>
+    <text class="gh1aZ" x="730" y="124" text-anchor="middle">REPOSITORY</text>
+    <text class="gh1aS" x="730" y="142" text-anchor="middle">permanent snapshots</text>
+
+    <line x1="250" y1="128" x2="330" y2="128" stroke="#1B1F23" stroke-width="2" marker-end="url(#arrGh1a)"/>
+    <text class="gh1aCmd" x="290" y="118" text-anchor="middle">git add</text>
+
+    <line x1="540" y1="128" x2="620" y2="128" stroke="#1B1F23" stroke-width="2" marker-end="url(#arrGh1a)"/>
+    <text class="gh1aCmd" x="580" y="118" text-anchor="middle">git commit</text>
+
+    <text class="gh1aN" x="40" y="222">Staging lets you commit part of your work with a clean message while the rest stays in progress.</text>
+  </svg>
+  <figcaption>&#128269; Click to zoom - git add and git commit move files between zones, not save changes</figcaption>
+</figure>
+
         <table class="clean">
           <thead><tr><th>Zone</th><th>What it is</th><th>Command to enter it</th></tr></thead>
           <tbody>
